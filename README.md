@@ -1,1 +1,1 @@
-# -DE_Project_2026
+# DE_Project_2026
