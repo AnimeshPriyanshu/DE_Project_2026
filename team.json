@@ -1,0 +1,28 @@
+
+{
+  "team_number": "T0095",
+  "group_lead": {
+    "name": "Animesh Priyanshu",
+    "enrollment_no": "2501010057",
+    "github": "https://github.com/AnimeshPriyanshu"
+  },
+  "members": [
+    {
+      "name": "Atul Panda",
+      "enrollment_no": "2501010705",
+      "github": "https://github.com/atulpanda2006"
+    },
+    {
+      "name": "Ishan Chetwani",
+      "enrollment_no": "2501010194",
+      "github": "https://github.com/Ishan3131"
+    },
+    {
+      "name": "Rishabh Singh",
+      "enrollment_no": "2501010376",
+      "github": "https://github.com/risrajawat"
+    }
+  ],
+  "postgres_version": "18.6",
+  "laptop_used_for_benchmarks": "Apple MacBook Pro M4 Pro"
+}
