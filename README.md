@@ -4,6 +4,17 @@
 **Database:** PostgreSQL 15 or newer · **Final submission:** Mon 23 Nov 2026
 **Topics used:** Data types & constraints · Keys & relationships · Normalization · Query execution plans · Indexing · Query optimization · VACUUM/ANALYZE · Partitioning & sharding
 
+## Project overview
+
+This DE team project studies the database behind Practo doctor appointments. Starting from the supplied CSV exports, the team will design and load a constrained PostgreSQL schema, measure the supplied 30-query workload, optimize it without changing query results, and evaluate how the database scales to a larger dataset.
+
+## Tech stack
+
+- PostgreSQL 15 or newer
+- SQL for schema design, data loading, workload queries, and optimization
+- CSV seed data supplied as `seed_data.zip`
+- Bash benchmark script at `benchmarks/run_benchmark.sh`
+
 ## Files in this folder
 
 | Path | What it is |
@@ -14,20 +25,21 @@
 | `benchmarks/run_benchmark.sh` | Timing script: 3 runs per query, average, raw plans saved |
 | `CHECKPOINTS.md` | Checkpoint dates and the files each one needs (DE and AP repos) |
 
-**Getting started:** **clone this repository and push it into your team's DE repo** (the DE repo you submitted in the form); the steps are in [`CHECKPOINTS.md`](CHECKPOINTS.md). Keep the structure shown in [Repository structure](#repository-structure-submit-exactly-this). Unzip `seed_data.zip` inside your project folder, but don't commit the CSV files. Deadlines are in [`CHECKPOINTS.md`](CHECKPOINTS.md). Then begin with Phase 1.
+## Getting started
+
+Clone this faculty repository and push it into your team's DE repository (the DE repository submitted in the form); the steps and deadlines are in [`CHECKPOINTS.md`](CHECKPOINTS.md). Keep the structure shown in [Repository structure](#repository-structure-submit-exactly-this). Unzip `seed_data.zip` inside your project folder, but do not commit the CSV files. Then begin with Phase 1.
 
 ---
 
-## Team details (fill in before you start)
+## Team details
 
-| Role | Name | Enrollment No. | GitHub Username |
-|------|------|----------------|-----------------|
-| Group Lead | | | |
-| Member 2 | | | |
-| Member 3 | | | |
-| Member 4 | | | |
-
-**Team No.:** ____ · **Section:** ____ · **Repository URL:** ____
+| Team information | Details |
+|------------------|---------|
+| Team number | T0095 |
+| Section | C |
+| Members | Animesh Priyanshu; Atul Panda; Ishan Chetwani; Rishabh Singh |
+| Mentor | Satyaki |
+| DE repository | [AnimeshPriyanshu/DE_Project_2026](https://github.com/AnimeshPriyanshu/DE_Project_2026) |
 
 ---
 
