@@ -2,39 +2,39 @@
 
 ## P1. Doctor Search and Slot Picker
 
-Patients face delays when searching for doctors, viewing their profiles and checking available appointment slots. The system should help patients find verified doctors based on city, specialization and language, and show their available slots quickly.
+Patients need to find doctors by specialization, city and language, view profiles and check available slots quickly.
 
-**Stakeholders:** Patients, Patient App team.
+**Stakeholders:** Patients, doctors.
 
 **Classification:** Customer-facing / Real-time.
 
 ## P2. Patient Appointments and Booking
 
-Patients face delays when checking their appointments, signing in using their mobile numbers and viewing their prescriptions. The system should make it easy to access appointment details and book new appointments.
+Patients need quick access to their appointments, sign-in and prescriptions. Booking should also be fast.
 
-**Stakeholders:** Patients, Patient App team.
+**Stakeholders:** Patients, support team.
 
 **Classification:** Customer-facing / Real-time.
 
-## P3. Doctor Queue and Check-in
+## P3. Clinic Queue and Check-in
 
-Clinic receptionists need to see all appointments for a doctor on a particular day. They should also be able to check patients in and record their check-in time without delays.
+Clinic staff need to view a doctor's daily queue and record patient check-ins quickly. Doctors also need access to their queues.
 
-**Stakeholders:** Clinic receptionists, doctors, Clinics team.
+**Stakeholders:** Clinic reception, doctors.
 
-**Classification:** Operational / Real-time.
+**Classification:** Customer-facing / Real-time.
 
 ## P4. Patient Safety
 
-The system should help doctors identify patients who are given medicines they are allergic to, patients who have missed their follow-up appointments and patients who are visiting multiple doctors for the same health problem.
+Doctors and care teams need to find allergy conflicts, missed follow-ups and patients visiting multiple doctors for the same problem.
 
-**Stakeholders:** Patients, doctors, patient-safety team, care team.
+**Stakeholders:** Patients, doctors, care team, patient-safety team.
 
-**Classification:** Operational / Real-time.
+**Classification:** Customer-facing / Real-time.
 
 ## P5. Clinic Partnerships
 
-The clinic partnerships team needs to find clinics that do not have any doctor schedules. This will help them identify clinics where doctor availability needs to be improved.
+The partnerships team needs to find clinics without doctor schedules to improve doctor availability.
 
 **Stakeholders:** Clinic partnerships team.
 
@@ -42,26 +42,26 @@ The clinic partnerships team needs to find clinics that do not have any doctor s
 
 ## P6. Quality Reports
 
-The management team needs reports about missed appointments, patient waiting times, doctor ratings and double bookings. These reports will help them understand and improve the quality of services.
+The quality team needs reports on missed appointments, waiting times, doctor ratings and double bookings.
 
-**Stakeholders:** Quality team, clinic management, doctors.
+**Stakeholders:** Quality team, doctors, clinic reception, support team.
 
 **Classification:** Reporting / Analytics.
 
 ## P7. Finance, Pharmacy and Population Health
 
-The system needs to generate reports about revenue, commonly prescribed medicines and patient health trends. It should also handle a large increase in appointment data, with an expected growth of 20 times.
+The system should provide revenue, medicine and patient health reports. It must also handle a 20x increase in appointments.
 
-**Stakeholders:** Finance team, pharmacy partners, analytics/insights team.
+**Stakeholders:** Finance team, pharmacy partners, care team.
 
 **Classification:** Reporting / Analytics.
 
 ## Assumptions
 
-1. Every doctor and patient has a unique ID.
-2. A doctor can have multiple specializations and weekly schedules.
-3. Video consultations may not be linked to a physical clinic.
-4. Check-in and consultation times depend on the appointment status.
-5. A prescription can contain multiple medicines.
-6. Past appointment and prescription records should be maintained.
-7. The database should be able to handle future data growth while keeping information accurate and consistent.
+1. Every doctor, patient, clinic and appointment has a unique ID.
+2. Doctors can have multiple weekly schedules.
+3. Appointments can be in-clinic or through video consultation.
+4. A prescription can contain multiple medicines.
+5. Patient allergies must be checked before prescribing medicines.
+6. Appointment, check-in, prescription and review history must be stored.
+7. The database must support future growth and maintain accurate data.
