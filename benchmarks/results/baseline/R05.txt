@@ -1,0 +1,69 @@
+=== R05 run 1 ===
+Sort  (cost=5272.54..5272.54 rows=1 width=41) (actual time=6.997..7.711 rows=3.00 loops=1)
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=2732
+  ->  Nested Loop  (cost=1000.29..5272.53 rows=1 width=41) (actual time=6.882..7.700 rows=3.00 loops=1)
+        Buffers: shared hit=2729
+        ->  Gather  (cost=1000.00..5264.22 rows=1 width=33) (actual time=6.855..7.658 rows=3.00 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=2720
+              ->  Parallel Seq Scan on appointments a  (cost=0.00..4264.12 rows=1 width=33) (actual time=4.742..4.798 rows=1.50 loops=2)
+                    Filter: ((doctor_id = 16) AND (date(slot_start) = '2026-06-30'::date))
+                    Rows Removed by Filter: 74998
+                    Buffers: shared hit=2720
+        ->  Index Scan using patients_pkey on patients p  (cost=0.29..8.31 rows=1 width=16) (actual time=0.013..0.013 rows=1.00 loops=3)
+              Index Cond: (patient_id = a.patient_id)
+              Index Searches: 3
+              Buffers: shared hit=9
+Planning:
+  Buffers: shared hit=274
+Planning Time: 0.396 ms
+Execution Time: 7.740 ms
+=== R05 run 2 ===
+Sort  (cost=5272.54..5272.54 rows=1 width=41) (actual time=6.614..7.433 rows=3.00 loops=1)
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=2732
+  ->  Nested Loop  (cost=1000.29..5272.53 rows=1 width=41) (actual time=6.439..7.421 rows=3.00 loops=1)
+        Buffers: shared hit=2729
+        ->  Gather  (cost=1000.00..5264.22 rows=1 width=33) (actual time=6.406..7.373 rows=3.00 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=2720
+              ->  Parallel Seq Scan on appointments a  (cost=0.00..4264.12 rows=1 width=33) (actual time=5.397..5.494 rows=1.50 loops=2)
+                    Filter: ((doctor_id = 16) AND (date(slot_start) = '2026-06-30'::date))
+                    Rows Removed by Filter: 74998
+                    Buffers: shared hit=2720
+        ->  Index Scan using patients_pkey on patients p  (cost=0.29..8.31 rows=1 width=16) (actual time=0.013..0.013 rows=1.00 loops=3)
+              Index Cond: (patient_id = a.patient_id)
+              Index Searches: 3
+              Buffers: shared hit=9
+Planning:
+  Buffers: shared hit=274
+Planning Time: 0.343 ms
+Execution Time: 7.461 ms
+=== R05 run 3 ===
+Sort  (cost=5272.54..5272.54 rows=1 width=41) (actual time=6.042..6.657 rows=3.00 loops=1)
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=2732
+  ->  Nested Loop  (cost=1000.29..5272.53 rows=1 width=41) (actual time=5.942..6.648 rows=3.00 loops=1)
+        Buffers: shared hit=2729
+        ->  Gather  (cost=1000.00..5264.22 rows=1 width=33) (actual time=5.931..6.629 rows=3.00 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=2720
+              ->  Parallel Seq Scan on appointments a  (cost=0.00..4264.12 rows=1 width=33) (actual time=4.133..4.185 rows=1.50 loops=2)
+                    Filter: ((doctor_id = 16) AND (date(slot_start) = '2026-06-30'::date))
+                    Rows Removed by Filter: 74998
+                    Buffers: shared hit=2720
+        ->  Index Scan using patients_pkey on patients p  (cost=0.29..8.31 rows=1 width=16) (actual time=0.005..0.005 rows=1.00 loops=3)
+              Index Cond: (patient_id = a.patient_id)
+              Index Searches: 3
+              Buffers: shared hit=9
+Planning:
+  Buffers: shared hit=274
+Planning Time: 0.333 ms
+Execution Time: 6.693 ms

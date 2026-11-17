@@ -1,0 +1,33 @@
+=== W03 run 1 ===
+Update on prescriptions  (cost=0.29..8.31 rows=0 width=0) (actual time=0.146..0.146 rows=0.00 loops=1)
+  Buffers: shared hit=25 dirtied=4
+  ->  Index Scan using prescriptions_appointment_id_key on prescriptions  (cost=0.29..8.31 rows=1 width=42) (actual time=0.010..0.010 rows=1.00 loops=1)
+        Index Cond: (appointment_id = 18872)
+        Index Searches: 1
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=76
+Planning Time: 0.220 ms
+Execution Time: 0.200 ms
+=== W03 run 2 ===
+Update on prescriptions  (cost=0.29..8.31 rows=0 width=0) (actual time=0.089..0.089 rows=0.00 loops=1)
+  Buffers: shared hit=27 dirtied=1
+  ->  Index Scan using prescriptions_appointment_id_key on prescriptions  (cost=0.29..8.31 rows=1 width=42) (actual time=0.012..0.014 rows=1.00 loops=1)
+        Index Cond: (appointment_id = 18872)
+        Index Searches: 1
+        Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=76
+Planning Time: 0.167 ms
+Execution Time: 0.134 ms
+=== W03 run 3 ===
+Update on prescriptions  (cost=0.29..8.31 rows=0 width=0) (actual time=0.076..0.076 rows=0.00 loops=1)
+  Buffers: shared hit=27 dirtied=1
+  ->  Index Scan using prescriptions_appointment_id_key on prescriptions  (cost=0.29..8.31 rows=1 width=42) (actual time=0.011..0.013 rows=1.00 loops=1)
+        Index Cond: (appointment_id = 18872)
+        Index Searches: 1
+        Buffers: shared hit=5
+Planning:
+  Buffers: shared hit=76
+Planning Time: 0.160 ms
+Execution Time: 0.119 ms
