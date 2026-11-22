@@ -1,0 +1,38 @@
+                                                                                                                                     QUERY PLAN                                                                                                                                      
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=11434526608.92..11434526748.36 rows=55776 width=36)
+   Output: d.doctor_id, d.full_name, ((SubPlan 1)), ((SubPlan 2))
+   Sort Key: ((SubPlan 1)) DESC
+   ->  Hash Right Semi Join  (cost=3273.00..11434522211.72 rows=55776 width=36)
+         Output: d.doctor_id, d.full_name, (SubPlan 1), (SubPlan 2)
+         Inner Unique: true
+         Hash Cond: (sc.doctor_id = d.doctor_id)
+         ->  Hash Join  (cost=851.00..13093.23 rows=97560 width=4)
+               Output: sc.doctor_id
+               Inner Unique: true
+               Hash Cond: (sc.clinic_id = c.clinic_id)
+               ->  Seq Scan on practo.doctor_schedules sc  (cost=0.00..10641.47 rows=609747 width=8)
+                     Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+               ->  Hash  (cost=791.00..791.00 rows=4800 width=4)
+                     Output: c.clinic_id
+                     ->  Seq Scan on practo.clinics c  (cost=0.00..791.00 rows=4800 width=4)
+                           Output: c.clinic_id
+                           Filter: (c.city_id = 1)
+         ->  Hash  (cost=1672.00..1672.00 rows=60000 width=20)
+               Output: d.doctor_id, d.full_name
+               ->  Seq Scan on practo.doctors d  (cost=0.00..1672.00 rows=60000 width=20)
+                     Output: d.doctor_id, d.full_name
+         SubPlan 1
+           ->  Aggregate  (cost=113757.37..113757.38 rows=1 width=8)
+                 Output: count(*)
+                 ->  Seq Scan on practo.appointments a  (cost=0.00..113757.36 rows=3 width=0)
+                       Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                       Filter: ((a.slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (a.slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (a.doctor_id = d.doctor_id) AND ((a.status)::text = 'COMPLETED'::text))
+         SubPlan 2
+           ->  Aggregate  (cost=91250.24..91250.25 rows=1 width=8)
+                 Output: max(a_1.consult_ended_at)
+                 ->  Seq Scan on practo.appointments a_1  (cost=0.00..91250.10 rows=56 width=8)
+                       Output: a_1.appointment_id, a_1.patient_id, a_1.doctor_id, a_1.clinic_id, a_1.consult_type, a_1.booked_at, a_1.slot_start, a_1.slot_end, a_1.reason, a_1.status, a_1.checked_in_at, a_1.consult_started_at, a_1.consult_ended_at, a_1.fee, a_1.payment_status
+                       Filter: (a_1.doctor_id = d.doctor_id)
+(34 rows)
+

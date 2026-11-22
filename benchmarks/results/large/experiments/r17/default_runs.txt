@@ -1,0 +1,36 @@
+=== default run 1 ===
+  Buffers: shared hit=12149 read=52829, temp read=7790 written=7864
+        Buffers: shared hit=12149 read=52829, temp read=7790 written=7864
+              Buffers: shared hit=12149 read=52829, temp read=7790 written=7864
+                    Buffers: shared hit=12133 read=52829, temp read=5915 written=5980
+                          Buffers: shared hit=12132 read=41606
+                          Buffers: shared hit=1 read=11223, temp written=2748
+                                Buffers: shared hit=1 read=11223
+  Buffers: shared hit=250 read=3
+Planning Time: 0.907 ms
+Execution Time: 473.594 ms
+real 0.51
+=== default run 2 ===
+  Buffers: shared hit=12713 read=52265, temp read=7793 written=7859
+        Buffers: shared hit=12713 read=52265, temp read=7793 written=7859
+              Buffers: shared hit=12713 read=52265, temp read=7793 written=7859
+                    Buffers: shared hit=12697 read=52265, temp read=5919 written=5976
+                          Buffers: shared hit=12414 read=41324
+                          Buffers: shared hit=283 read=10941, temp written=2732
+                                Buffers: shared hit=283 read=10941
+  Buffers: shared hit=253
+Planning Time: 0.452 ms
+Execution Time: 446.679 ms
+real 0.47
+=== default run 3 ===
+  Buffers: shared hit=13277 read=51701, temp read=7789 written=7856
+        Buffers: shared hit=13277 read=51701, temp read=7789 written=7856
+              Buffers: shared hit=13277 read=51701, temp read=7789 written=7856
+                    Buffers: shared hit=13261 read=51701, temp read=5914 written=5972
+                          Buffers: shared hit=12696 read=41042
+                          Buffers: shared hit=565 read=10659, temp written=2740
+                                Buffers: shared hit=565 read=10659
+  Buffers: shared hit=253
+Planning Time: 0.436 ms
+Execution Time: 449.709 ms
+real 0.47

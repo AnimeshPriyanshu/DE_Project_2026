@@ -1,0 +1,93 @@
+=== R22 run 1 ===
+Limit  (cost=265352.78..265355.69 rows=25 width=29) (actual time=242.371..259.036 rows=25.00 loops=1)
+  Output: appointment_id, patient_id, doctor_id, status, slot_start
+  Buffers: shared hit=10255 read=43559, temp read=16911 written=30916
+  ->  Gather Merge  (cost=253706.13..603218.19 rows=3000967 width=29) (actual time=234.574..257.150 rows=100025.00 loops=1)
+        Output: appointment_id, patient_id, doctor_id, status, slot_start
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=10255 read=43559, temp read=16911 written=30916
+        ->  Sort  (cost=252706.11..255832.11 rows=1250403 width=29) (actual time=232.091..233.507 rows=33977.00 loops=3)
+              Output: appointment_id, patient_id, doctor_id, status, slot_start
+              Sort Key: appointments.slot_start DESC
+              Sort Method: external merge  Disk: 42184kB
+              Buffers: shared hit=10255 read=43559, temp read=16911 written=30916
+              Worker 0:  actual time=232.563..234.131 rows=32521.00 loops=1
+                Sort Method: external merge  Disk: 41472kB
+                Buffers: shared hit=3554 read=14537, temp read=5676 written=10384
+              Worker 1:  actual time=230.187..231.620 rows=29207.00 loops=1
+                Sort Method: external merge  Disk: 39824kB
+                Buffers: shared hit=3426 read=13938, temp read=5470 written=9970
+              ->  Parallel Seq Scan on practo.appointments  (cost=0.00..66242.03 rows=1250403 width=29) (actual time=0.043..59.933 rows=1000000.00 loops=3)
+                    Output: appointment_id, patient_id, doctor_id, status, slot_start
+                    Buffers: shared hit=10179 read=43559
+                    Worker 0:  actual time=0.034..60.744 rows=1007650.00 loops=1
+                      Buffers: shared hit=3516 read=14537
+                    Worker 1:  actual time=0.066..58.840 rows=967456.00 loops=1
+                      Buffers: shared hit=3388 read=13938
+Planning:
+  Buffers: shared hit=88
+Planning Time: 0.166 ms
+Execution Time: 265.748 ms
+=== R22 run 2 ===
+Limit  (cost=265352.78..265355.69 rows=25 width=29) (actual time=247.215..261.347 rows=25.00 loops=1)
+  Output: appointment_id, patient_id, doctor_id, status, slot_start
+  Buffers: shared hit=10537 read=43277, temp read=16911 written=30918
+  ->  Gather Merge  (cost=253706.13..603218.19 rows=3000967 width=29) (actual time=239.611..259.424 rows=100025.00 loops=1)
+        Output: appointment_id, patient_id, doctor_id, status, slot_start
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=10537 read=43277, temp read=16911 written=30918
+        ->  Sort  (cost=252706.11..255832.11 rows=1250403 width=29) (actual time=235.690..237.289 rows=33970.33 loops=3)
+              Output: appointment_id, patient_id, doctor_id, status, slot_start
+              Sort Key: appointments.slot_start DESC
+              Sort Method: external merge  Disk: 42344kB
+              Buffers: shared hit=10537 read=43277, temp read=16911 written=30918
+              Worker 0:  actual time=233.765..235.731 rows=33131.00 loops=1
+                Sort Method: external merge  Disk: 40984kB
+                Buffers: shared hit=3532 read=14349, temp read=5615 written=10262
+              Worker 1:  actual time=233.765..235.555 rows=37502.00 loops=1
+                Sort Method: external merge  Disk: 40152kB
+                Buffers: shared hit=3449 read=14050, temp read=5511 written=10054
+              ->  Parallel Seq Scan on practo.appointments  (cost=0.00..66242.03 rows=1250403 width=29) (actual time=0.035..61.308 rows=1000000.00 loops=3)
+                    Output: appointment_id, patient_id, doctor_id, status, slot_start
+                    Buffers: shared hit=10461 read=43277
+                    Worker 0:  actual time=0.040..61.002 rows=995744.00 loops=1
+                      Buffers: shared hit=3494 read=14349
+                    Worker 1:  actual time=0.034..60.519 rows=975512.00 loops=1
+                      Buffers: shared hit=3411 read=14050
+Planning:
+  Buffers: shared hit=88
+Planning Time: 0.156 ms
+Execution Time: 272.269 ms
+=== R22 run 3 ===
+Limit  (cost=265352.78..265355.69 rows=25 width=29) (actual time=248.927..263.169 rows=25.00 loops=1)
+  Output: appointment_id, patient_id, doctor_id, status, slot_start
+  Buffers: shared hit=10819 read=42995, temp read=16911 written=30918
+  ->  Gather Merge  (cost=253706.13..603218.19 rows=3000967 width=29) (actual time=241.078..261.283 rows=100025.00 loops=1)
+        Output: appointment_id, patient_id, doctor_id, status, slot_start
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=10819 read=42995, temp read=16911 written=30918
+        ->  Sort  (cost=252706.11..255832.11 rows=1250403 width=29) (actual time=238.327..239.672 rows=34006.00 loops=3)
+              Output: appointment_id, patient_id, doctor_id, status, slot_start
+              Sort Key: appointments.slot_start DESC
+              Sort Method: external merge  Disk: 42496kB
+              Buffers: shared hit=10819 read=42995, temp read=16911 written=30918
+              Worker 0:  actual time=237.098..238.544 rows=30177.00 loops=1
+                Sort Method: external merge  Disk: 40560kB
+                Buffers: shared hit=3569 read=14127, temp read=5562 written=10156
+              Worker 1:  actual time=236.868..238.062 rows=28712.00 loops=1
+                Sort Method: external merge  Disk: 40424kB
+                Buffers: shared hit=3594 read=14030, temp read=5545 written=10122
+              ->  Parallel Seq Scan on practo.appointments  (cost=0.00..66242.03 rows=1250403 width=29) (actual time=0.033..61.398 rows=1000000.00 loops=3)
+                    Output: appointment_id, patient_id, doctor_id, status, slot_start
+                    Buffers: shared hit=10743 read=42995
+                    Worker 0:  actual time=0.033..61.178 rows=985470.00 loops=1
+                      Buffers: shared hit=3531 read=14127
+                    Worker 1:  actual time=0.036..60.459 rows=982075.00 loops=1
+                      Buffers: shared hit=3556 read=14030
+Planning:
+  Buffers: shared hit=88
+Planning Time: 0.152 ms
+Execution Time: 272.510 ms

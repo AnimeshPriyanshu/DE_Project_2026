@@ -1,0 +1,102 @@
+=== R12 run 1 ===
+GroupAggregate  (cost=73903.90..75914.80 rows=12063 width=25) (actual time=169.084..275.349 rows=14.00 loops=1)
+  Output: (date_trunc('month'::text, slot_start)), consult_type, count(*)
+  Group Key: (date_trunc('month'::text, appointments.slot_start)), appointments.consult_type
+  Buffers: shared hit=4159 read=49671, temp read=3446 written=3461
+  ->  Gather Merge  (cost=73903.90..75651.47 rows=15005 width=17) (actual time=152.408..240.425 rows=1029716.00 loops=1)
+        Output: (date_trunc('month'::text, slot_start)), consult_type
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=4159 read=49671, temp read=3446 written=3461
+        ->  Sort  (cost=72903.87..72919.50 rows=6252 width=17) (actual time=150.504..169.795 rows=343238.67 loops=3)
+              Output: (date_trunc('month'::text, slot_start)), consult_type
+              Sort Key: (date_trunc('month'::text, appointments.slot_start)), appointments.consult_type
+              Sort Method: external merge  Disk: 8712kB
+              Buffers: shared hit=4159 read=49671, temp read=3446 written=3461
+              Worker 0:  actual time=149.980..172.009 rows=349428.00 loops=1
+                Sort Method: external merge  Disk: 9352kB
+                Buffers: shared hit=1354 read=16844, temp read=1169 written=1174
+              Worker 1:  actual time=150.429..168.024 rows=355045.00 loops=1
+                Sort Method: external merge  Disk: 9504kB
+                Buffers: shared hit=1411 read=17340, temp read=1188 written=1193
+              ->  Parallel Seq Scan on practo.appointments  (cost=0.00..72509.68 rows=6252 width=17) (actual time=0.010..124.815 rows=343238.67 loops=3)
+                    Output: date_trunc('month'::text, slot_start), consult_type
+                    Filter: (EXTRACT(year FROM appointments.slot_start) = '2026'::numeric)
+                    Rows Removed by Filter: 656761
+                    Buffers: shared hit=4067 read=49671
+                    Worker 0:  actual time=0.008..123.546 rows=349428.00 loops=1
+                      Buffers: shared hit=1308 read=16844
+                    Worker 1:  actual time=0.010..123.724 rows=355045.00 loops=1
+                      Buffers: shared hit=1365 read=17340
+Planning:
+  Buffers: shared hit=109 read=3
+Planning Time: 0.384 ms
+Execution Time: 275.532 ms
+=== R12 run 2 ===
+GroupAggregate  (cost=73903.90..75914.80 rows=12063 width=25) (actual time=194.137..291.433 rows=14.00 loops=1)
+  Output: (date_trunc('month'::text, slot_start)), consult_type, count(*)
+  Group Key: (date_trunc('month'::text, appointments.slot_start)), appointments.consult_type
+  Buffers: shared hit=4441 read=49389, temp read=3446 written=3461
+  ->  Gather Merge  (cost=73903.90..75651.47 rows=15005 width=17) (actual time=177.811..258.580 rows=1029716.00 loops=1)
+        Output: (date_trunc('month'::text, slot_start)), consult_type
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=4441 read=49389, temp read=3446 written=3461
+        ->  Sort  (cost=72903.87..72919.50 rows=6252 width=17) (actual time=176.239..193.654 rows=343238.67 loops=3)
+              Output: (date_trunc('month'::text, slot_start)), consult_type
+              Sort Key: (date_trunc('month'::text, appointments.slot_start)), appointments.consult_type
+              Sort Method: external merge  Disk: 9544kB
+              Buffers: shared hit=4441 read=49389, temp read=3446 written=3461
+              Worker 0:  actual time=175.301..195.630 rows=349875.00 loops=1
+                Sort Method: external merge  Disk: 9368kB
+                Buffers: shared hit=1432 read=17219, temp read=1171 written=1176
+              Worker 1:  actual time=175.673..191.046 rows=323260.00 loops=1
+                Sort Method: external merge  Disk: 8656kB
+                Buffers: shared hit=1356 read=15410, temp read=1082 written=1087
+              ->  Parallel Seq Scan on practo.appointments  (cost=0.00..72509.68 rows=6252 width=17) (actual time=0.020..146.461 rows=343238.67 loops=3)
+                    Output: date_trunc('month'::text, slot_start), consult_type
+                    Filter: (EXTRACT(year FROM appointments.slot_start) = '2026'::numeric)
+                    Rows Removed by Filter: 656761
+                    Buffers: shared hit=4349 read=49389
+                    Worker 0:  actual time=0.008..144.434 rows=349875.00 loops=1
+                      Buffers: shared hit=1386 read=17219
+                    Worker 1:  actual time=0.039..147.445 rows=323260.00 loops=1
+                      Buffers: shared hit=1310 read=15410
+Planning:
+  Buffers: shared hit=112
+Planning Time: 0.187 ms
+Execution Time: 291.552 ms
+=== R12 run 3 ===
+GroupAggregate  (cost=73903.90..75914.80 rows=12063 width=25) (actual time=161.724..259.337 rows=14.00 loops=1)
+  Output: (date_trunc('month'::text, slot_start)), consult_type, count(*)
+  Group Key: (date_trunc('month'::text, appointments.slot_start)), appointments.consult_type
+  Buffers: shared hit=4723 read=49107, temp read=3446 written=3460
+  ->  Gather Merge  (cost=73903.90..75651.47 rows=15005 width=17) (actual time=147.135..222.793 rows=1029716.00 loops=1)
+        Output: (date_trunc('month'::text, slot_start)), consult_type
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=4723 read=49107, temp read=3446 written=3460
+        ->  Sort  (cost=72903.87..72919.50 rows=6252 width=17) (actual time=145.402..160.897 rows=343238.67 loops=3)
+              Output: (date_trunc('month'::text, slot_start)), consult_type
+              Sort Key: (date_trunc('month'::text, appointments.slot_start)), appointments.consult_type
+              Sort Method: external merge  Disk: 9752kB
+              Buffers: shared hit=4723 read=49107, temp read=3446 written=3460
+              Worker 0:  actual time=144.291..159.288 rows=342353.00 loops=1
+                Sort Method: external merge  Disk: 9168kB
+                Buffers: shared hit=1663 read=16645, temp read=1146 written=1151
+              Worker 1:  actual time=144.843..161.479 rows=322894.00 loops=1
+                Sort Method: external merge  Disk: 8648kB
+                Buffers: shared hit=1347 read=15875, temp read=1081 written=1085
+              ->  Parallel Seq Scan on practo.appointments  (cost=0.00..72509.68 rows=6252 width=17) (actual time=0.010..118.500 rows=343238.67 loops=3)
+                    Output: date_trunc('month'::text, slot_start), consult_type
+                    Filter: (EXTRACT(year FROM appointments.slot_start) = '2026'::numeric)
+                    Rows Removed by Filter: 656761
+                    Buffers: shared hit=4631 read=49107
+                    Worker 0:  actual time=0.008..118.845 rows=342353.00 loops=1
+                      Buffers: shared hit=1617 read=16645
+                    Worker 1:  actual time=0.008..116.695 rows=322894.00 loops=1
+                      Buffers: shared hit=1301 read=15875
+Planning:
+  Buffers: shared hit=112
+Planning Time: 0.182 ms
+Execution Time: 259.712 ms

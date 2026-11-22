@@ -1,0 +1,288 @@
+=== R08 run 1 ===
+Sort  (cost=79131.86..79133.06 rows=480 width=178) (actual time=304.885..304.899 rows=15.00 loops=1)
+  Output: s.spec_name, (count(*)), (round(((100.0 * (count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))::numeric) / (count(*))::numeric), 2))
+  Sort Key: (round(((100.0 * (count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))::numeric) / (count(*))::numeric), 2)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=7608 read=47406, temp read=3698 written=3710
+  ->  Finalize GroupAggregate  (cost=78897.17..79110.48 rows=480 width=178) (actual time=282.387..304.890 rows=15.00 loops=1)
+        Output: s.spec_name, count(*), round(((100.0 * (count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))::numeric) / (count(*))::numeric), 2)
+        Group Key: s.spec_name
+        Buffers: shared hit=7605 read=47406, temp read=3698 written=3710
+        ->  Gather Merge  (cost=78897.17..79091.04 rows=1152 width=154) (actual time=280.592..304.873 rows=45.00 loops=1)
+              Output: s.spec_name, (PARTIAL count(*)), (PARTIAL count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=7605 read=47406, temp read=3698 written=3710
+              ->  Partial GroupAggregate  (cost=77897.15..77958.05 rows=480 width=154) (actual time=252.345..276.882 rows=15.00 loops=3)
+                    Output: s.spec_name, PARTIAL count(*), PARTIAL count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text))
+                    Group Key: s.spec_name
+                    Buffers: shared hit=7605 read=47406, temp read=3698 written=3710
+                    Worker 0:  actual time=252.832..277.988 rows=15.00 loops=1
+                      Buffers: shared hit=2629 read=16269, temp read=1248 written=1252
+                    Worker 1:  actual time=252.269..276.461 rows=15.00 loops=1
+                      Buffers: shared hit=2435 read=14523, temp read=1202 written=1206
+                    ->  Sort  (cost=77897.15..77908.37 rows=4488 width=147) (actual time=250.637..264.812 rows=298106.00 loops=3)
+                          Output: s.spec_name, a.status
+                          Sort Key: s.spec_name
+                          Sort Method: external merge  Disk: 9984kB
+                          Buffers: shared hit=7605 read=47406, temp read=3698 written=3710
+                          Worker 0:  actual time=251.144..266.002 rows=301782.00 loops=1
+                            Sort Method: external merge  Disk: 9984kB
+                            Buffers: shared hit=2629 read=16269, temp read=1248 written=1252
+                          Worker 1:  actual time=250.658..264.638 rows=290729.00 loops=1
+                            Sort Method: external merge  Disk: 9616kB
+                            Buffers: shared hit=2435 read=14523, temp read=1202 written=1206
+                          ->  Hash Join  (cost=1927.35..77624.91 rows=4488 width=147) (actual time=5.558..186.481 rows=298106.00 loops=3)
+                                Output: s.spec_name, a.status
+                                Inner Unique: true
+                                Hash Cond: (ds.spec_id = s.spec_id)
+                                Buffers: shared hit=7589 read=47406
+                                Worker 0:  actual time=5.572..186.021 rows=301782.00 loops=1
+                                  Buffers: shared hit=2621 read=16269
+                                Worker 1:  actual time=5.584..186.939 rows=290729.00 loops=1
+                                  Buffers: shared hit=2427 read=14523
+                                ->  Hash Join  (cost=1906.55..77592.23 rows=4488 width=13) (actual time=5.536..166.201 rows=298106.00 loops=3)
+                                      Output: a.status, ds.spec_id
+                                      Hash Cond: (a.doctor_id = ds.doctor_id)
+                                      Buffers: shared hit=7586 read=47406
+                                      Worker 0:  actual time=5.543..166.204 rows=301782.00 loops=1
+                                        Buffers: shared hit=2620 read=16269
+                                      Worker 1:  actual time=5.557..167.057 rows=290729.00 loops=1
+                                        Buffers: shared hit=2426 read=14523
+                                      ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..75620.06 rows=5531 width=13) (actual time=0.044..122.610 rows=298106.00 loops=3)
+                                            Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                            Filter: (((a.status)::text = ANY ('{COMPLETED,NO_SHOW}'::text[])) AND (EXTRACT(year FROM a.slot_start) = '2026'::numeric))
+                                            Rows Removed by Filter: 701894
+                                            Buffers: shared hit=6338 read=47406
+                                            Worker 0:  actual time=0.047..122.657 rows=301782.00 loops=1
+                                              Buffers: shared hit=2204 read=16269
+                                            Worker 1:  actual time=0.049..123.435 rows=290729.00 loops=1
+                                              Buffers: shared hit=2010 read=14523
+                                      ->  Hash  (cost=1156.00..1156.00 rows=60044 width=8) (actual time=5.460..5.460 rows=60000.00 loops=3)
+                                            Output: ds.doctor_id, ds.spec_id
+                                            Buckets: 65536  Batches: 1  Memory Usage: 2856kB
+                                            Buffers: shared hit=1248
+                                            Worker 0:  actual time=5.466..5.466 rows=60000.00 loops=1
+                                              Buffers: shared hit=416
+                                            Worker 1:  actual time=5.478..5.478 rows=60000.00 loops=1
+                                              Buffers: shared hit=416
+                                            ->  Seq Scan on practo.doctor_specializations ds  (cost=0.00..1156.00 rows=60044 width=8) (actual time=0.016..2.789 rows=60000.00 loops=3)
+                                                  Output: ds.doctor_id, ds.spec_id
+                                                  Filter: ds.is_primary
+                                                  Rows Removed by Filter: 14000
+                                                  Buffers: shared hit=1248
+                                                  Worker 0:  actual time=0.020..2.707 rows=60000.00 loops=1
+                                                    Buffers: shared hit=416
+                                                  Worker 1:  actual time=0.024..2.761 rows=60000.00 loops=1
+                                                    Buffers: shared hit=416
+                                ->  Hash  (cost=14.80..14.80 rows=480 width=142) (actual time=0.019..0.019 rows=15.00 loops=3)
+                                      Output: s.spec_name, s.spec_id
+                                      Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                      Buffers: shared hit=3
+                                      Worker 0:  actual time=0.024..0.024 rows=15.00 loops=1
+                                        Buffers: shared hit=1
+                                      Worker 1:  actual time=0.025..0.025 rows=15.00 loops=1
+                                        Buffers: shared hit=1
+                                      ->  Seq Scan on practo.specializations s  (cost=0.00..14.80 rows=480 width=142) (actual time=0.015..0.015 rows=15.00 loops=3)
+                                            Output: s.spec_name, s.spec_id
+                                            Buffers: shared hit=3
+                                            Worker 0:  actual time=0.020..0.021 rows=15.00 loops=1
+                                              Buffers: shared hit=1
+                                            Worker 1:  actual time=0.021..0.021 rows=15.00 loops=1
+                                              Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=321
+Planning Time: 0.503 ms
+Execution Time: 305.319 ms
+=== R08 run 2 ===
+Sort  (cost=79131.86..79133.06 rows=480 width=178) (actual time=290.880..290.891 rows=15.00 loops=1)
+  Output: s.spec_name, (count(*)), (round(((100.0 * (count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))::numeric) / (count(*))::numeric), 2))
+  Sort Key: (round(((100.0 * (count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))::numeric) / (count(*))::numeric), 2)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=7890 read=47124, temp read=3696 written=3708
+  ->  Finalize GroupAggregate  (cost=78897.17..79110.48 rows=480 width=178) (actual time=269.807..290.883 rows=15.00 loops=1)
+        Output: s.spec_name, count(*), round(((100.0 * (count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))::numeric) / (count(*))::numeric), 2)
+        Group Key: s.spec_name
+        Buffers: shared hit=7887 read=47124, temp read=3696 written=3708
+        ->  Gather Merge  (cost=78897.17..79091.04 rows=1152 width=154) (actual time=268.165..290.869 rows=45.00 loops=1)
+              Output: s.spec_name, (PARTIAL count(*)), (PARTIAL count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=7887 read=47124, temp read=3696 written=3708
+              ->  Partial GroupAggregate  (cost=77897.15..77958.05 rows=480 width=154) (actual time=241.836..265.658 rows=15.00 loops=3)
+                    Output: s.spec_name, PARTIAL count(*), PARTIAL count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text))
+                    Group Key: s.spec_name
+                    Buffers: shared hit=7887 read=47124, temp read=3696 written=3708
+                    Worker 0:  actual time=241.784..264.872 rows=15.00 loops=1
+                      Buffers: shared hit=2641 read=15894, temp read=1231 written=1235
+                    Worker 1:  actual time=240.562..266.254 rows=15.00 loops=1
+                      Buffers: shared hit=2688 read=16046, temp read=1248 written=1252
+                    ->  Sort  (cost=77897.15..77908.37 rows=4488 width=147) (actual time=240.143..254.015 rows=298106.00 loops=3)
+                          Output: s.spec_name, a.status
+                          Sort Key: s.spec_name
+                          Sort Method: external merge  Disk: 9736kB
+                          Buffers: shared hit=7887 read=47124, temp read=3696 written=3708
+                          Worker 0:  actual time=240.200..253.475 rows=297774.00 loops=1
+                            Sort Method: external merge  Disk: 9848kB
+                            Buffers: shared hit=2641 read=15894, temp read=1231 written=1235
+                          Worker 1:  actual time=238.736..253.972 rows=301815.00 loops=1
+                            Sort Method: external merge  Disk: 9984kB
+                            Buffers: shared hit=2688 read=16046, temp read=1248 written=1252
+                          ->  Hash Join  (cost=1927.35..77624.91 rows=4488 width=147) (actual time=5.207..177.487 rows=298106.00 loops=3)
+                                Output: s.spec_name, a.status
+                                Inner Unique: true
+                                Hash Cond: (ds.spec_id = s.spec_id)
+                                Buffers: shared hit=7871 read=47124
+                                Worker 0:  actual time=5.177..176.480 rows=297774.00 loops=1
+                                  Buffers: shared hit=2633 read=15894
+                                Worker 1:  actual time=5.131..176.763 rows=301815.00 loops=1
+                                  Buffers: shared hit=2680 read=16046
+                                ->  Hash Join  (cost=1906.55..77592.23 rows=4488 width=13) (actual time=5.186..158.107 rows=298106.00 loops=3)
+                                      Output: a.status, ds.spec_id
+                                      Hash Cond: (a.doctor_id = ds.doctor_id)
+                                      Buffers: shared hit=7868 read=47124
+                                      Worker 0:  actual time=5.152..157.151 rows=297774.00 loops=1
+                                        Buffers: shared hit=2632 read=15894
+                                      Worker 1:  actual time=5.105..157.130 rows=301815.00 loops=1
+                                        Buffers: shared hit=2679 read=16046
+                                      ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..75620.06 rows=5531 width=13) (actual time=0.040..116.870 rows=298106.00 loops=3)
+                                            Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                            Filter: (((a.status)::text = ANY ('{COMPLETED,NO_SHOW}'::text[])) AND (EXTRACT(year FROM a.slot_start) = '2026'::numeric))
+                                            Rows Removed by Filter: 701894
+                                            Buffers: shared hit=6620 read=47124
+                                            Worker 0:  actual time=0.039..115.795 rows=297774.00 loops=1
+                                              Buffers: shared hit=2216 read=15894
+                                            Worker 1:  actual time=0.044..116.360 rows=301815.00 loops=1
+                                              Buffers: shared hit=2263 read=16046
+                                      ->  Hash  (cost=1156.00..1156.00 rows=60044 width=8) (actual time=5.117..5.117 rows=60000.00 loops=3)
+                                            Output: ds.doctor_id, ds.spec_id
+                                            Buckets: 65536  Batches: 1  Memory Usage: 2856kB
+                                            Buffers: shared hit=1248
+                                            Worker 0:  actual time=5.083..5.083 rows=60000.00 loops=1
+                                              Buffers: shared hit=416
+                                            Worker 1:  actual time=5.032..5.032 rows=60000.00 loops=1
+                                              Buffers: shared hit=416
+                                            ->  Seq Scan on practo.doctor_specializations ds  (cost=0.00..1156.00 rows=60044 width=8) (actual time=0.013..2.740 rows=60000.00 loops=3)
+                                                  Output: ds.doctor_id, ds.spec_id
+                                                  Filter: ds.is_primary
+                                                  Rows Removed by Filter: 14000
+                                                  Buffers: shared hit=1248
+                                                  Worker 0:  actual time=0.019..2.677 rows=60000.00 loops=1
+                                                    Buffers: shared hit=416
+                                                  Worker 1:  actual time=0.019..2.706 rows=60000.00 loops=1
+                                                    Buffers: shared hit=416
+                                ->  Hash  (cost=14.80..14.80 rows=480 width=142) (actual time=0.018..0.018 rows=15.00 loops=3)
+                                      Output: s.spec_name, s.spec_id
+                                      Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                      Buffers: shared hit=3
+                                      Worker 0:  actual time=0.023..0.023 rows=15.00 loops=1
+                                        Buffers: shared hit=1
+                                      Worker 1:  actual time=0.023..0.024 rows=15.00 loops=1
+                                        Buffers: shared hit=1
+                                      ->  Seq Scan on practo.specializations s  (cost=0.00..14.80 rows=480 width=142) (actual time=0.014..0.015 rows=15.00 loops=3)
+                                            Output: s.spec_name, s.spec_id
+                                            Buffers: shared hit=3
+                                            Worker 0:  actual time=0.019..0.020 rows=15.00 loops=1
+                                              Buffers: shared hit=1
+                                            Worker 1:  actual time=0.020..0.020 rows=15.00 loops=1
+                                              Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=321
+Planning Time: 0.481 ms
+Execution Time: 291.251 ms
+=== R08 run 3 ===
+Sort  (cost=79131.86..79133.06 rows=480 width=178) (actual time=298.221..298.235 rows=15.00 loops=1)
+  Output: s.spec_name, (count(*)), (round(((100.0 * (count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))::numeric) / (count(*))::numeric), 2))
+  Sort Key: (round(((100.0 * (count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))::numeric) / (count(*))::numeric), 2)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=8172 read=46842, temp read=3698 written=3712
+  ->  Finalize GroupAggregate  (cost=78897.17..79110.48 rows=480 width=178) (actual time=275.395..298.227 rows=15.00 loops=1)
+        Output: s.spec_name, count(*), round(((100.0 * (count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))::numeric) / (count(*))::numeric), 2)
+        Group Key: s.spec_name
+        Buffers: shared hit=8169 read=46842, temp read=3698 written=3712
+        ->  Gather Merge  (cost=78897.17..79091.04 rows=1152 width=154) (actual time=273.607..298.212 rows=45.00 loops=1)
+              Output: s.spec_name, (PARTIAL count(*)), (PARTIAL count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text)))
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=8169 read=46842, temp read=3698 written=3712
+              ->  Partial GroupAggregate  (cost=77897.15..77958.05 rows=480 width=154) (actual time=246.591..271.379 rows=15.00 loops=3)
+                    Output: s.spec_name, PARTIAL count(*), PARTIAL count(*) FILTER (WHERE ((a.status)::text = 'NO_SHOW'::text))
+                    Group Key: s.spec_name
+                    Buffers: shared hit=8169 read=46842, temp read=3698 written=3712
+                    Worker 0:  actual time=247.340..271.318 rows=15.00 loops=1
+                      Buffers: shared hit=2673 read=15292, temp read=1162 written=1166
+                    Worker 1:  actual time=245.372..271.169 rows=15.00 loops=1
+                      Buffers: shared hit=2710 read=15644, temp read=1271 written=1276
+                    ->  Sort  (cost=77897.15..77908.37 rows=4488 width=147) (actual time=244.818..259.406 rows=298106.00 loops=3)
+                          Output: s.spec_name, a.status
+                          Sort Key: s.spec_name
+                          Sort Method: external merge  Disk: 10120kB
+                          Buffers: shared hit=8169 read=46842, temp read=3698 written=3712
+                          Worker 0:  actual time=245.697..259.793 rows=281065.00 loops=1
+                            Sort Method: external merge  Disk: 9296kB
+                            Buffers: shared hit=2673 read=15292, temp read=1162 written=1166
+                          Worker 1:  actual time=243.532..258.776 rows=307390.00 loops=1
+                            Sort Method: external merge  Disk: 10168kB
+                            Buffers: shared hit=2710 read=15644, temp read=1271 written=1276
+                          ->  Hash Join  (cost=1927.35..77624.91 rows=4488 width=147) (actual time=5.352..181.357 rows=298106.00 loops=3)
+                                Output: s.spec_name, a.status
+                                Inner Unique: true
+                                Hash Cond: (ds.spec_id = s.spec_id)
+                                Buffers: shared hit=8153 read=46842
+                                Worker 0:  actual time=5.502..179.873 rows=281065.00 loops=1
+                                  Buffers: shared hit=2665 read=15292
+                                Worker 1:  actual time=5.214..180.665 rows=307390.00 loops=1
+                                  Buffers: shared hit=2702 read=15644
+                                ->  Hash Join  (cost=1906.55..77592.23 rows=4488 width=13) (actual time=5.332..159.538 rows=298106.00 loops=3)
+                                      Output: a.status, ds.spec_id
+                                      Hash Cond: (a.doctor_id = ds.doctor_id)
+                                      Buffers: shared hit=8150 read=46842
+                                      Worker 0:  actual time=5.477..158.060 rows=281065.00 loops=1
+                                        Buffers: shared hit=2664 read=15292
+                                      Worker 1:  actual time=5.188..160.270 rows=307390.00 loops=1
+                                        Buffers: shared hit=2701 read=15644
+                                      ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..75620.06 rows=5531 width=13) (actual time=0.039..117.827 rows=298106.00 loops=3)
+                                            Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                            Filter: (((a.status)::text = ANY ('{COMPLETED,NO_SHOW}'::text[])) AND (EXTRACT(year FROM a.slot_start) = '2026'::numeric))
+                                            Rows Removed by Filter: 701894
+                                            Buffers: shared hit=6902 read=46842
+                                            Worker 0:  actual time=0.038..116.264 rows=281065.00 loops=1
+                                              Buffers: shared hit=2248 read=15292
+                                            Worker 1:  actual time=0.043..118.752 rows=307390.00 loops=1
+                                              Buffers: shared hit=2285 read=15644
+                                      ->  Hash  (cost=1156.00..1156.00 rows=60044 width=8) (actual time=5.263..5.263 rows=60000.00 loops=3)
+                                            Output: ds.doctor_id, ds.spec_id
+                                            Buckets: 65536  Batches: 1  Memory Usage: 2856kB
+                                            Buffers: shared hit=1248
+                                            Worker 0:  actual time=5.411..5.411 rows=60000.00 loops=1
+                                              Buffers: shared hit=416
+                                            Worker 1:  actual time=5.117..5.117 rows=60000.00 loops=1
+                                              Buffers: shared hit=416
+                                            ->  Seq Scan on practo.doctor_specializations ds  (cost=0.00..1156.00 rows=60044 width=8) (actual time=0.013..2.796 rows=60000.00 loops=3)
+                                                  Output: ds.doctor_id, ds.spec_id
+                                                  Filter: ds.is_primary
+                                                  Rows Removed by Filter: 14000
+                                                  Buffers: shared hit=1248
+                                                  Worker 0:  actual time=0.018..2.811 rows=60000.00 loops=1
+                                                    Buffers: shared hit=416
+                                                  Worker 1:  actual time=0.018..2.713 rows=60000.00 loops=1
+                                                    Buffers: shared hit=416
+                                ->  Hash  (cost=14.80..14.80 rows=480 width=142) (actual time=0.018..0.018 rows=15.00 loops=3)
+                                      Output: s.spec_name, s.spec_id
+                                      Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                                      Buffers: shared hit=3
+                                      Worker 0:  actual time=0.022..0.023 rows=15.00 loops=1
+                                        Buffers: shared hit=1
+                                      Worker 1:  actual time=0.023..0.024 rows=15.00 loops=1
+                                        Buffers: shared hit=1
+                                      ->  Seq Scan on practo.specializations s  (cost=0.00..14.80 rows=480 width=142) (actual time=0.014..0.015 rows=15.00 loops=3)
+                                            Output: s.spec_name, s.spec_id
+                                            Buffers: shared hit=3
+                                            Worker 0:  actual time=0.019..0.019 rows=15.00 loops=1
+                                              Buffers: shared hit=1
+                                            Worker 1:  actual time=0.020..0.020 rows=15.00 loops=1
+                                              Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=321
+Planning Time: 0.468 ms
+Execution Time: 298.676 ms

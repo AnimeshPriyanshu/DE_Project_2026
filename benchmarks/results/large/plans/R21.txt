@@ -1,0 +1,99 @@
+=== R21 run 1 ===
+Limit  (cost=80968.73..80980.38 rows=100 width=25) (actual time=85.295..86.385 rows=100.00 loops=1)
+  Output: appointment_id, patient_id, clinic_id, fee, slot_start
+  Buffers: shared hit=9408 read=44406
+  ->  Gather Merge  (cost=80968.73..135635.19 rows=469375 width=25) (actual time=85.295..86.376 rows=100.00 loops=1)
+        Output: appointment_id, patient_id, clinic_id, fee, slot_start
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=9408 read=44406
+        ->  Sort  (cost=79968.71..80457.64 rows=195573 width=25) (actual time=83.970..83.971 rows=74.33 loops=3)
+              Output: appointment_id, patient_id, clinic_id, fee, slot_start
+              Sort Key: appointments.slot_start DESC
+              Sort Method: top-N heapsort  Memory: 36kB
+              Buffers: shared hit=9408 read=44406
+              Worker 0:  actual time=83.286..83.288 rows=100.00 loops=1
+                Sort Method: top-N heapsort  Memory: 37kB
+                Buffers: shared hit=3304 read=14807
+              Worker 1:  actual time=83.412..83.414 rows=100.00 loops=1
+                Sort Method: top-N heapsort  Memory: 37kB
+                Buffers: shared hit=3240 read=15082
+              ->  Parallel Seq Scan on practo.appointments  (cost=0.00..72494.05 rows=195573 width=25) (actual time=0.035..73.770 rows=164605.33 loops=3)
+                    Output: appointment_id, patient_id, clinic_id, fee, slot_start
+                    Filter: (((appointments.status)::text = 'COMPLETED'::text) AND ((appointments.payment_status)::text = 'PENDING'::text))
+                    Rows Removed by Filter: 835395
+                    Buffers: shared hit=9332 read=44406
+                    Worker 0:  actual time=0.035..73.292 rows=166260.00 loops=1
+                      Buffers: shared hit=3266 read=14807
+                    Worker 1:  actual time=0.037..72.965 rows=167971.00 loops=1
+                      Buffers: shared hit=3202 read=15082
+Planning:
+  Buffers: shared hit=102
+Planning Time: 0.220 ms
+Execution Time: 86.405 ms
+=== R21 run 2 ===
+Limit  (cost=80968.73..80980.38 rows=100 width=25) (actual time=94.014..95.091 rows=100.00 loops=1)
+  Output: appointment_id, patient_id, clinic_id, fee, slot_start
+  Buffers: shared hit=9690 read=44124
+  ->  Gather Merge  (cost=80968.73..135635.19 rows=469375 width=25) (actual time=94.014..95.086 rows=100.00 loops=1)
+        Output: appointment_id, patient_id, clinic_id, fee, slot_start
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=9690 read=44124
+        ->  Sort  (cost=79968.71..80457.64 rows=195573 width=25) (actual time=92.776..92.777 rows=76.00 loops=3)
+              Output: appointment_id, patient_id, clinic_id, fee, slot_start
+              Sort Key: appointments.slot_start DESC
+              Sort Method: top-N heapsort  Memory: 36kB
+              Buffers: shared hit=9690 read=44124
+              Worker 0:  actual time=92.084..92.086 rows=100.00 loops=1
+                Sort Method: top-N heapsort  Memory: 37kB
+                Buffers: shared hit=3236 read=13685
+              Worker 1:  actual time=92.308..92.310 rows=100.00 loops=1
+                Sort Method: top-N heapsort  Memory: 36kB
+                Buffers: shared hit=2951 read=13524
+              ->  Parallel Seq Scan on practo.appointments  (cost=0.00..72494.05 rows=195573 width=25) (actual time=0.041..78.992 rows=164605.33 loops=3)
+                    Output: appointment_id, patient_id, clinic_id, fee, slot_start
+                    Filter: (((appointments.status)::text = 'COMPLETED'::text) AND ((appointments.payment_status)::text = 'PENDING'::text))
+                    Rows Removed by Filter: 835395
+                    Buffers: shared hit=9614 read=44124
+                    Worker 0:  actual time=0.056..76.907 rows=155263.00 loops=1
+                      Buffers: shared hit=3198 read=13685
+                    Worker 1:  actual time=0.036..79.804 rows=150930.00 loops=1
+                      Buffers: shared hit=2913 read=13524
+Planning:
+  Buffers: shared hit=102
+Planning Time: 0.168 ms
+Execution Time: 95.109 ms
+=== R21 run 3 ===
+Limit  (cost=80968.73..80980.38 rows=100 width=25) (actual time=91.334..92.486 rows=100.00 loops=1)
+  Output: appointment_id, patient_id, clinic_id, fee, slot_start
+  Buffers: shared hit=9972 read=43842
+  ->  Gather Merge  (cost=80968.73..135635.19 rows=469375 width=25) (actual time=91.333..92.476 rows=100.00 loops=1)
+        Output: appointment_id, patient_id, clinic_id, fee, slot_start
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=9972 read=43842
+        ->  Sort  (cost=79968.71..80457.64 rows=195573 width=25) (actual time=90.068..90.070 rows=75.00 loops=3)
+              Output: appointment_id, patient_id, clinic_id, fee, slot_start
+              Sort Key: appointments.slot_start DESC
+              Sort Method: top-N heapsort  Memory: 36kB
+              Buffers: shared hit=9972 read=43842
+              Worker 0:  actual time=89.452..89.454 rows=100.00 loops=1
+                Sort Method: top-N heapsort  Memory: 37kB
+                Buffers: shared hit=3219 read=13773
+              Worker 1:  actual time=89.505..89.507 rows=100.00 loops=1
+                Sort Method: top-N heapsort  Memory: 36kB
+                Buffers: shared hit=3532 read=15830
+              ->  Parallel Seq Scan on practo.appointments  (cost=0.00..72494.05 rows=195573 width=25) (actual time=0.038..76.068 rows=164605.33 loops=3)
+                    Output: appointment_id, patient_id, clinic_id, fee, slot_start
+                    Filter: (((appointments.status)::text = 'COMPLETED'::text) AND ((appointments.payment_status)::text = 'PENDING'::text))
+                    Rows Removed by Filter: 835395
+                    Buffers: shared hit=9896 read=43842
+                    Worker 0:  actual time=0.044..75.113 rows=155494.00 loops=1
+                      Buffers: shared hit=3181 read=13773
+                    Worker 1:  actual time=0.043..76.056 rows=178440.00 loops=1
+                      Buffers: shared hit=3494 read=15830
+Planning:
+  Buffers: shared hit=102
+Planning Time: 0.171 ms
+Execution Time: 92.507 ms

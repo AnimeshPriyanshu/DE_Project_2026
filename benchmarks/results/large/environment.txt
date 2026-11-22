@@ -1,0 +1,69 @@
+# Large-dataset benchmark environment (captured 2026-11-22)
+
+                                                             version                                                             
+---------------------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 18.6 (Postgres.app) on aarch64-apple-darwin23.6.0, compiled by Apple clang version 15.0.0 (clang-1500.3.9.4), 64-bit
+(1 row)
+
+      database      |  size   
+--------------------+---------
+ practo_t0095_large | 1473 MB
+(1 row)
+
+              name               | setting | unit 
+---------------------------------+---------+------
+ default_statistics_target       | 100     | 
+ effective_cache_size            | 524288  | 8kB
+ maintenance_work_mem            | 65536   | kB
+ max_parallel_workers_per_gather | 2       | 
+ max_worker_processes            | 8       | 
+ random_page_cost                | 4       | 
+ shared_buffers                  | 16384   | 8kB
+ statement_timeout               | 0       | ms
+ work_mem                        | 4096    | kB
+(9 rows)
+
+        relname         | n_live_tup | n_dead_tup | last_analyze |         last_autovacuum          
+------------------------+------------+------------+--------------+----------------------------------
+ prescription_items     |    4860623 |          0 |              | 2026-11-22 00:21:04.943392+05:30
+ appointments           |    3000410 |       6098 |              | 2026-11-22 00:20:42.002674+05:30
+ prescriptions          |    1944432 |          0 |              | 2026-11-22 00:20:52.80726+05:30
+ patients               |     800000 |          0 |              | 2026-11-22 00:20:47.688886+05:30
+ doctor_schedules       |     609747 |          0 |              | 2026-11-22 00:20:44.563885+05:30
+ doctor_reviews         |     608179 |          0 |              | 2026-11-22 00:21:07.23297+05:30
+ doctor_specializations |      74000 |          0 |              | 2026-11-22 00:20:43.18319+05:30
+ doctors                |      60000 |          0 |              | 2026-11-22 00:20:43.060535+05:30
+ clinics                |      30000 |          0 |              | 2026-11-22 00:20:43.304058+05:30
+ specializations        |         15 |          0 |              | 
+ cities                 |         10 |          0 |              | 
+(11 rows)
+
+ appointments_exact 
+--------------------
+            3000000
+(1 row)
+
+     indexname     |                                         indexdef                                          
+-------------------+-------------------------------------------------------------------------------------------
+ appointments_pkey | CREATE UNIQUE INDEX appointments_pkey ON practo.appointments USING btree (appointment_id)
+(1 row)
+
+      attname       | n_distinct  | null_frac  | avg_width 
+--------------------+-------------+------------+-----------
+ appointment_id     |          -1 |          0 |         4
+ booked_at          |          -1 |          0 |         8
+ checked_in_at      |      117260 | 0.34626666 |         8
+ clinic_id          |       16558 | 0.18903333 |         4
+ consult_ended_at   |      153568 | 0.19363333 |         8
+ consult_started_at |      147013 | 0.19363333 |         8
+ consult_type       |           2 |          0 |         9
+ doctor_id          |       53914 |          0 |         4
+ fee                |          13 |          0 |         5
+ patient_id         | -0.20394179 |          0 |         4
+ payment_status     |           3 |          0 |         5
+ reason             |          15 |          0 |        12
+ slot_end           |       16454 |          0 |         8
+ slot_start         |       16384 |          0 |         8
+ status             |           4 |          0 |         9
+(15 rows)
+

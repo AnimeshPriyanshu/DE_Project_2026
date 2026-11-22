@@ -1,0 +1,99 @@
+=== R05 run 1 ===
+Sort  (cost=76628.61..76628.62 rows=1 width=41) (actual time=44.129..44.984 rows=1.00 loops=1)
+  Output: a.appointment_id, p.full_name, a.slot_start, a.status, a.checked_in_at
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=5491 read=48254
+  ->  Nested Loop  (cost=1000.42..76628.60 rows=1 width=41) (actual time=44.121..44.977 rows=1.00 loops=1)
+        Output: a.appointment_id, p.full_name, a.slot_start, a.status, a.checked_in_at
+        Inner Unique: true
+        Buffers: shared hit=5488 read=48254
+        ->  Gather  (cost=1000.00..76620.16 rows=1 width=33) (actual time=43.896..44.751 rows=1.00 loops=1)
+              Output: a.appointment_id, a.slot_start, a.status, a.checked_in_at, a.patient_id
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=5486 read=48252
+              ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..75620.06 rows=1 width=33) (actual time=28.767..42.383 rows=0.33 loops=3)
+                    Output: a.appointment_id, a.slot_start, a.status, a.checked_in_at, a.patient_id
+                    Filter: ((a.doctor_id = 16) AND (date(a.slot_start) = '2026-06-30'::date))
+                    Rows Removed by Filter: 1000000
+                    Buffers: shared hit=5486 read=48252
+                    Worker 0:  actual time=0.700..41.545 rows=1.00 loops=1
+                      Buffers: shared hit=1736 read=15959
+                    Worker 1:  actual time=41.783..41.784 rows=0.00 loops=1
+                      Buffers: shared hit=1746 read=15256
+        ->  Index Scan using patients_pkey on practo.patients p  (cost=0.42..8.44 rows=1 width=16) (actual time=0.220..0.221 rows=1.00 loops=1)
+              Output: p.patient_id, p.full_name, p.phone, p.email, p.dob, p.gender, p.blood_group, p.allergies, p.city_id, p.created_at
+              Index Cond: (p.patient_id = a.patient_id)
+              Index Searches: 1
+              Buffers: shared hit=2 read=2
+Planning:
+  Buffers: shared hit=255 read=10
+Planning Time: 1.195 ms
+Execution Time: 45.017 ms
+=== R05 run 2 ===
+Sort  (cost=76628.61..76628.62 rows=1 width=41) (actual time=44.398..45.390 rows=1.00 loops=1)
+  Output: a.appointment_id, p.full_name, a.slot_start, a.status, a.checked_in_at
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=5775 read=47970
+  ->  Nested Loop  (cost=1000.42..76628.60 rows=1 width=41) (actual time=2.927..45.383 rows=1.00 loops=1)
+        Output: a.appointment_id, p.full_name, a.slot_start, a.status, a.checked_in_at
+        Inner Unique: true
+        Buffers: shared hit=5772 read=47970
+        ->  Gather  (cost=1000.00..76620.16 rows=1 width=33) (actual time=2.919..45.374 rows=1.00 loops=1)
+              Output: a.appointment_id, a.slot_start, a.status, a.checked_in_at, a.patient_id
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=5768 read=47970
+              ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..75620.06 rows=1 width=33) (actual time=29.183..42.989 rows=0.33 loops=3)
+                    Output: a.appointment_id, a.slot_start, a.status, a.checked_in_at, a.patient_id
+                    Filter: ((a.doctor_id = 16) AND (date(a.slot_start) = '2026-06-30'::date))
+                    Rows Removed by Filter: 1000000
+                    Buffers: shared hit=5768 read=47970
+                    Worker 0:  actual time=42.197..42.198 rows=0.00 loops=1
+                      Buffers: shared hit=1940 read=16312
+                    Worker 1:  actual time=42.489..42.489 rows=0.00 loops=1
+                      Buffers: shared hit=1743 read=14851
+        ->  Index Scan using patients_pkey on practo.patients p  (cost=0.42..8.44 rows=1 width=16) (actual time=0.007..0.007 rows=1.00 loops=1)
+              Output: p.patient_id, p.full_name, p.phone, p.email, p.dob, p.gender, p.blood_group, p.allergies, p.city_id, p.created_at
+              Index Cond: (p.patient_id = a.patient_id)
+              Index Searches: 1
+              Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=265
+Planning Time: 0.331 ms
+Execution Time: 45.416 ms
+=== R05 run 3 ===
+Sort  (cost=76628.61..76628.62 rows=1 width=41) (actual time=45.630..46.513 rows=1.00 loops=1)
+  Output: a.appointment_id, p.full_name, a.slot_start, a.status, a.checked_in_at
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=6057 read=47688
+  ->  Nested Loop  (cost=1000.42..76628.60 rows=1 width=41) (actual time=2.746..46.506 rows=1.00 loops=1)
+        Output: a.appointment_id, p.full_name, a.slot_start, a.status, a.checked_in_at
+        Inner Unique: true
+        Buffers: shared hit=6054 read=47688
+        ->  Gather  (cost=1000.00..76620.16 rows=1 width=33) (actual time=2.738..46.497 rows=1.00 loops=1)
+              Output: a.appointment_id, a.slot_start, a.status, a.checked_in_at, a.patient_id
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=6050 read=47688
+              ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..75620.06 rows=1 width=33) (actual time=30.032..44.309 rows=0.33 loops=3)
+                    Output: a.appointment_id, a.slot_start, a.status, a.checked_in_at, a.patient_id
+                    Filter: ((a.doctor_id = 16) AND (date(a.slot_start) = '2026-06-30'::date))
+                    Rows Removed by Filter: 1000000
+                    Buffers: shared hit=6050 read=47688
+                    Worker 0:  actual time=43.567..43.568 rows=0.00 loops=1
+                      Buffers: shared hit=1842 read=15193
+                    Worker 1:  actual time=43.847..43.847 rows=0.00 loops=1
+                      Buffers: shared hit=2113 read=16123
+        ->  Index Scan using patients_pkey on practo.patients p  (cost=0.42..8.44 rows=1 width=16) (actual time=0.007..0.007 rows=1.00 loops=1)
+              Output: p.patient_id, p.full_name, p.phone, p.email, p.dob, p.gender, p.blood_group, p.allergies, p.city_id, p.created_at
+              Index Cond: (p.patient_id = a.patient_id)
+              Index Searches: 1
+              Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=265
+Planning Time: 0.325 ms
+Execution Time: 46.539 ms

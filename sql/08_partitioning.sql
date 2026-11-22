@@ -1,0 +1,157 @@
+-- =====================================================================
+-- Practo Doctor Appointments Database — CP4 Partitioning DESIGN (DEFERRED)
+-- Team T0095 Dwelling
+--
+-- STATUS: DESIGN RECORD — NOT EXECUTED. This file is not a migration.
+-- The official large dataset is now loaded (3,000,000 appointments,
+-- 1,473 MB) and measured in benchmarks/results/large/. Partitioning remains
+-- deferred because the evidence points to missing indexes/query rewrites,
+-- not partition pruning, as the first fix.
+--
+-- Every statement below is intentionally commented out. Do not run it until a
+-- partitioned prototype has been built on a copy, benchmarked with the full
+-- workload, and shown to beat the heap + index/rewrite design.
+--
+-- WHY THIS IS NOT IMPLEMENTED NOW
+--   * Measured large-scale results: R19 timed out (missing doctor_id index and
+--     2 correlated 3M-row scans per doctor); R13 timed out (NULL NOT IN trap);
+--     R24 1.51 s; no case where partition pruning is the demonstrated fix.
+--   * R19's max(consult_ended_at) spans all time, so a monthly partition cannot
+--     prune that subplan; the 9,600 correlated loops remain.
+--   * Partitioning requires a composite primary key and composite foreign
+--     keys, drops global uniqueness on appointment_id alone, and changes
+--     application INSERT/UPDATE behaviour. These costs are not justified
+--     without measured benefit.
+--   * See docs/05_scalability_report.md and docs/06_cp4_large_scale_report.md.
+-- =====================================================================
+
+
+-- ---------------------------------------------------------------------
+-- 1. PostgreSQL requirement (verified on PostgreSQL 18)
+-- ---------------------------------------------------------------------
+-- A RANGE-partitioned table's PRIMARY KEY must include the partition key.
+-- For appointments partitioned by slot_start, the PK must be
+-- (appointment_id, slot_start). A single-column PRIMARY KEY (appointment_id)
+-- is rejected:
+--
+--   ERROR: unique constraint on partitioned table must include all
+--          partitioning columns
+--
+-- This means appointment_id alone is no longer globally unique. Two rows
+-- with the same appointment_id and different slot_start would be permitted.
+-- To preserve global uniqueness on appointment_id alone, a separate
+-- registry/identity table (or another validated design) is required. No
+-- such design has been implemented or tested.
+
+
+-- ---------------------------------------------------------------------
+-- 2. Existing dependent objects affected by a PK change
+-- ---------------------------------------------------------------------
+-- prescriptions:
+--   * prescriptions_appointment_id_key  = UNIQUE constraint on
+--     prescriptions.appointment_id. It enforces uniqueness within
+--     prescriptions and does not reference another table.
+--   * prescriptions_appointment_id_fkey = FOREIGN KEY referencing
+--     appointments.appointment_id. It must be recreated as a composite FK
+--     if the referenced PK becomes (appointment_id, slot_start).
+--
+-- doctor_reviews:
+--   * doctor_reviews_appointment_id_key  = UNIQUE constraint on
+--     doctor_reviews.appointment_id (no external reference).
+--   * doctor_reviews_appointment_id_fkey = FOREIGN KEY referencing
+--     appointments.appointment_id.
+--
+-- The UNIQUE constraints and the FOREIGN KEYs are separate objects with
+-- separate migration handling.
+
+
+-- ---------------------------------------------------------------------
+-- 3. Proposed (deferred) shape — conceptual, commented out
+-- ---------------------------------------------------------------------
+-- Step A: create the partitioned parent with a composite PK.
+--
+-- CREATE TABLE practo.appointments_part (
+--     appointment_id     INTEGER      NOT NULL,
+--     patient_id         INTEGER      NOT NULL REFERENCES practo.patients (patient_id),
+--     doctor_id          INTEGER      NOT NULL REFERENCES practo.doctors (doctor_id),
+--     clinic_id          INTEGER      REFERENCES practo.clinics (clinic_id),
+--     consult_type       VARCHAR(10)  NOT NULL,
+--     booked_at          TIMESTAMPTZ  NOT NULL,
+--     slot_start         TIMESTAMPTZ  NOT NULL,
+--     slot_end           TIMESTAMPTZ  NOT NULL,
+--     reason             VARCHAR(200) NOT NULL,
+--     status             VARCHAR(12)  NOT NULL,
+--     checked_in_at      TIMESTAMPTZ,
+--     consult_started_at TIMESTAMPTZ,
+--     consult_ended_at   TIMESTAMPTZ,
+--     fee                NUMERIC(10,2) NOT NULL,
+--     payment_status     VARCHAR(10)  NOT NULL,
+--     PRIMARY KEY (appointment_id, slot_start)
+-- ) PARTITION BY RANGE (slot_start);
+--
+-- Step B: create monthly partitions covering the loaded data range, e.g.
+-- CREATE TABLE practo.appointments_2026_06
+--     PARTITION OF practo.appointments_part
+--     FOR VALUES FROM (TIMESTAMPTZ '2026-06-01 00:00:00')
+--                   TO (TIMESTAMPTZ '2026-07-01 00:00:00');
+-- (repeat per month; a DEFAULT partition does not provide useful pruning)
+--
+-- Step C: migrate data, then swap names. This requires a write freeze and
+-- validation that every prescriptions/doctor_reviews row matches the new
+-- (appointment_id, slot_start) key before the composite FKs can be created.
+--
+-- Step D: recreate the dependent foreign keys as composite FKs, and decide
+-- whether to preserve the existing UNIQUE constraints. Example shape:
+--
+-- ALTER TABLE practo.prescriptions
+--     DROP CONSTRAINT prescriptions_appointment_id_fkey;
+-- ALTER TABLE practo.prescriptions
+--     ADD CONSTRAINT prescriptions_appointment_id_fkey
+--     FOREIGN KEY (appointment_id, slot_start)
+--     REFERENCES practo.appointments (appointment_id, slot_start);
+--
+-- The same applies to doctor_reviews. Application INSERT/UPDATE paths must
+-- supply slot_start when writing prescriptions/doctor_reviews.
+--
+-- Step E: re-create the existing indexes on the partitioned table. In
+-- PostgreSQL, indexes created on the parent are propagated to partitions;
+-- verify partial indexes (idx_appt_completed_pending,
+-- idx_appt_pending_noshow_slot) behave as intended.
+--
+-- Step F: ANALYZE the partitioned table and re-run the full workload with
+-- the benchmark harness. Keep raw plans and summary.csv as evidence.
+
+
+-- ---------------------------------------------------------------------
+-- 4. Pruning verification (only meaningful after Step A exists)
+-- ---------------------------------------------------------------------
+-- Planning-time, executor-initialization-time and execution-time pruning
+-- are distinct. Use:
+--
+--   EXPLAIN (ANALYZE, BUFFERS, VERBOSE) <query>
+--
+-- Look for: an Append node with child partition scans; `(never executed)`
+-- on child nodes; reduced `loops`; and `Subplans Removed` (which counts
+-- partition child plans removed at executor initialization, not correlated
+-- SubPlan invocations). Do not run EXPLAIN (PARTITIONS ...) on the heap
+-- table or on a table where it is not applicable.
+--
+-- Direct slot_start range predicates (R17, R25, and range clauses in R09,
+-- R16, W05) may allow bound derivation. Predicates using DATE(slot_start),
+-- slot_start::date or EXTRACT(YEAR FROM slot_start) (R05, R08, R12, R20)
+-- may prevent direct bound derivation; test on the partitioned design
+-- rather than assuming either outcome.
+
+
+-- ---------------------------------------------------------------------
+-- 5. Decision rule (project heuristics, not PostgreSQL rules)
+-- ---------------------------------------------------------------------
+-- Compare repeated before/after measurements on a prototype copy: median
+-- latency, buffer reads from EXPLAIN (ANALYZE, BUFFERS), write overhead from
+-- client-side timings (and pg_stat_statements if available), and workload
+-- frequency from the benchmark run summary. Five runs support
+-- median/variability checks but are not sufficient for a reliable p95.
+-- Proposed project thresholds: ~30% latency reduction, ~40% fewer buffer
+-- reads, <=1.5x write overhead. The official large dataset is now available
+-- and baseline results exist, but no partitioned prototype has been measured;
+-- adopt partitioning only after such a prototype meets these criteria.

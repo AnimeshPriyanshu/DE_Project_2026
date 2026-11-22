@@ -1,0 +1,4 @@
+psql:/tmp/r19_timeout_60s.sql:11: ERROR:  canceling statement due to statement timeout
+real 60.02
+user 0.00
+sys 0.00

@@ -1,0 +1,69 @@
+=== W01 run 1 ===
+Insert on practo.appointments  (cost=0.71..16.77 rows=0 width=0) (actual time=0.229..0.230 rows=0.00 loops=1)
+  Buffers: shared hit=33 read=14 dirtied=2
+  ->  Nested Loop  (cost=0.71..16.77 rows=1 width=605) (actual time=0.034..0.035 rows=1.00 loops=1)
+        Output: 90000001, 90, 217, sc.clinic_id, 'IN_CLINIC'::character varying(10), '2026-07-01 09:00:00+05:30'::timestamp with time zone, '2026-07-03 10:30:00+05:30'::timestamp with time zone, ('2026-07-03 10:30:00+05:30'::timestamp with time zone + ((sc.slot_minutes)::double precision * '00:01:00'::interval)), 'Skin rash'::character varying(200), 'BOOKED'::character varying(12), NULL::timestamp with time zone, NULL::timestamp with time zone, NULL::timestamp with time zone, d.consultation_fee, 'PENDING'::character varying(10)
+        Buffers: shared hit=3 read=7
+        ->  Index Scan using doctor_schedules_pkey on practo.doctor_schedules sc  (cost=0.42..8.45 rows=1 width=10) (actual time=0.021..0.021 rows=1.00 loops=1)
+              Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+              Index Cond: ((sc.doctor_id = 217) AND (sc.weekday = 5) AND (sc.start_time = '10:00:00'::time without time zone))
+              Index Searches: 1
+              Buffers: shared hit=3 read=4
+        ->  Index Scan using doctors_pkey on practo.doctors d  (cost=0.29..8.31 rows=1 width=9) (actual time=0.009..0.010 rows=1.00 loops=1)
+              Output: d.doctor_id, d.full_name, d.registration_no, d.gender, d.experience_years, d.consultation_fee, d.video_fee, d.languages, d.is_verified, d.joined_on
+              Index Cond: (d.doctor_id = 217)
+              Index Searches: 1
+              Buffers: shared read=3
+Planning:
+  Buffers: shared hit=167 read=5
+Planning Time: 0.354 ms
+Trigger RI_ConstraintTrigger_c_23145 for constraint appointments_patient_id_fkey: time=0.630 calls=1
+Trigger RI_ConstraintTrigger_c_23150 for constraint appointments_doctor_id_fkey: time=0.054 calls=1
+Trigger RI_ConstraintTrigger_c_23155 for constraint appointments_clinic_id_fkey: time=0.139 calls=1
+Execution Time: 1.075 ms
+=== W01 run 2 ===
+Insert on practo.appointments  (cost=0.71..16.77 rows=0 width=0) (actual time=0.144..0.144 rows=0.00 loops=1)
+  Buffers: shared hit=48
+  ->  Nested Loop  (cost=0.71..16.77 rows=1 width=605) (actual time=0.021..0.021 rows=1.00 loops=1)
+        Output: 90000001, 90, 217, sc.clinic_id, 'IN_CLINIC'::character varying(10), '2026-07-01 09:00:00+05:30'::timestamp with time zone, '2026-07-03 10:30:00+05:30'::timestamp with time zone, ('2026-07-03 10:30:00+05:30'::timestamp with time zone + ((sc.slot_minutes)::double precision * '00:01:00'::interval)), 'Skin rash'::character varying(200), 'BOOKED'::character varying(12), NULL::timestamp with time zone, NULL::timestamp with time zone, NULL::timestamp with time zone, d.consultation_fee, 'PENDING'::character varying(10)
+        Buffers: shared hit=10
+        ->  Index Scan using doctor_schedules_pkey on practo.doctor_schedules sc  (cost=0.42..8.45 rows=1 width=10) (actual time=0.012..0.013 rows=1.00 loops=1)
+              Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+              Index Cond: ((sc.doctor_id = 217) AND (sc.weekday = 5) AND (sc.start_time = '10:00:00'::time without time zone))
+              Index Searches: 1
+              Buffers: shared hit=7
+        ->  Index Scan using doctors_pkey on practo.doctors d  (cost=0.29..8.31 rows=1 width=9) (actual time=0.005..0.005 rows=1.00 loops=1)
+              Output: d.doctor_id, d.full_name, d.registration_no, d.gender, d.experience_years, d.consultation_fee, d.video_fee, d.languages, d.is_verified, d.joined_on
+              Index Cond: (d.doctor_id = 217)
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=172
+Planning Time: 0.300 ms
+Trigger RI_ConstraintTrigger_c_23145 for constraint appointments_patient_id_fkey: time=0.213 calls=1
+Trigger RI_ConstraintTrigger_c_23150 for constraint appointments_doctor_id_fkey: time=0.041 calls=1
+Trigger RI_ConstraintTrigger_c_23155 for constraint appointments_clinic_id_fkey: time=0.100 calls=1
+Execution Time: 0.519 ms
+=== W01 run 3 ===
+Insert on practo.appointments  (cost=0.71..16.77 rows=0 width=0) (actual time=0.153..0.153 rows=0.00 loops=1)
+  Buffers: shared hit=48
+  ->  Nested Loop  (cost=0.71..16.77 rows=1 width=605) (actual time=0.022..0.023 rows=1.00 loops=1)
+        Output: 90000001, 90, 217, sc.clinic_id, 'IN_CLINIC'::character varying(10), '2026-07-01 09:00:00+05:30'::timestamp with time zone, '2026-07-03 10:30:00+05:30'::timestamp with time zone, ('2026-07-03 10:30:00+05:30'::timestamp with time zone + ((sc.slot_minutes)::double precision * '00:01:00'::interval)), 'Skin rash'::character varying(200), 'BOOKED'::character varying(12), NULL::timestamp with time zone, NULL::timestamp with time zone, NULL::timestamp with time zone, d.consultation_fee, 'PENDING'::character varying(10)
+        Buffers: shared hit=10
+        ->  Index Scan using doctor_schedules_pkey on practo.doctor_schedules sc  (cost=0.42..8.45 rows=1 width=10) (actual time=0.014..0.014 rows=1.00 loops=1)
+              Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+              Index Cond: ((sc.doctor_id = 217) AND (sc.weekday = 5) AND (sc.start_time = '10:00:00'::time without time zone))
+              Index Searches: 1
+              Buffers: shared hit=7
+        ->  Index Scan using doctors_pkey on practo.doctors d  (cost=0.29..8.31 rows=1 width=9) (actual time=0.005..0.005 rows=1.00 loops=1)
+              Output: d.doctor_id, d.full_name, d.registration_no, d.gender, d.experience_years, d.consultation_fee, d.video_fee, d.languages, d.is_verified, d.joined_on
+              Index Cond: (d.doctor_id = 217)
+              Index Searches: 1
+              Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=172
+Planning Time: 0.314 ms
+Trigger RI_ConstraintTrigger_c_23145 for constraint appointments_patient_id_fkey: time=0.210 calls=1
+Trigger RI_ConstraintTrigger_c_23150 for constraint appointments_doctor_id_fkey: time=0.041 calls=1
+Trigger RI_ConstraintTrigger_c_23155 for constraint appointments_clinic_id_fkey: time=0.102 calls=1
+Execution Time: 0.530 ms

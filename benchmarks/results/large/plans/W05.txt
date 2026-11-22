@@ -1,0 +1,36 @@
+=== W05 run 1 ===
+Update on practo.appointments  (cost=0.00..114356.44 rows=0 width=0) (actual time=143.501..143.501 rows=0.00 loops=1)
+  Buffers: shared hit=15415 read=38606 dirtied=128 written=8
+  ->  Seq Scan on practo.appointments  (cost=0.00..114356.44 rows=1 width=86) (actual time=143.500..143.500 rows=0.00 loops=1)
+        Output: 'CANCELLED'::character varying(12), 'REFUNDED'::character varying(10), ctid
+        Filter: ((appointments.slot_start >= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND (appointments.slot_start < '2026-07-04 00:00:00+05:30'::timestamp with time zone) AND (appointments.doctor_id = 504) AND ((appointments.status)::text = 'BOOKED'::text))
+        Rows Removed by Filter: 3000000
+        Buffers: shared hit=15415 read=38606 dirtied=128 written=8
+Planning:
+  Buffers: shared hit=79
+Planning Time: 0.187 ms
+Execution Time: 143.549 ms
+=== W05 run 2 ===
+Update on practo.appointments  (cost=0.00..114356.44 rows=0 width=0) (actual time=150.880..150.880 rows=0.00 loops=1)
+  Buffers: shared hit=15512 read=38509
+  ->  Seq Scan on practo.appointments  (cost=0.00..114356.44 rows=1 width=86) (actual time=150.879..150.879 rows=0.00 loops=1)
+        Output: 'CANCELLED'::character varying(12), 'REFUNDED'::character varying(10), ctid
+        Filter: ((appointments.slot_start >= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND (appointments.slot_start < '2026-07-04 00:00:00+05:30'::timestamp with time zone) AND (appointments.doctor_id = 504) AND ((appointments.status)::text = 'BOOKED'::text))
+        Rows Removed by Filter: 3000000
+        Buffers: shared hit=15512 read=38509
+Planning:
+  Buffers: shared hit=79
+Planning Time: 0.164 ms
+Execution Time: 150.923 ms
+=== W05 run 3 ===
+Update on practo.appointments  (cost=0.00..114356.44 rows=0 width=0) (actual time=140.639..140.639 rows=0.00 loops=1)
+  Buffers: shared hit=15606 read=38415
+  ->  Seq Scan on practo.appointments  (cost=0.00..114356.44 rows=1 width=86) (actual time=140.638..140.639 rows=0.00 loops=1)
+        Output: 'CANCELLED'::character varying(12), 'REFUNDED'::character varying(10), ctid
+        Filter: ((appointments.slot_start >= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND (appointments.slot_start < '2026-07-04 00:00:00+05:30'::timestamp with time zone) AND (appointments.doctor_id = 504) AND ((appointments.status)::text = 'BOOKED'::text))
+        Rows Removed by Filter: 3000000
+        Buffers: shared hit=15606 read=38415
+Planning:
+  Buffers: shared hit=79
+Planning Time: 0.159 ms
+Execution Time: 140.682 ms
