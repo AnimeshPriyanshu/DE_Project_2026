@@ -1,0 +1,78 @@
+=== W02 run 1 ===
+Update on practo.appointments  (cost=113758.03..113766.05 rows=0 width=0) (actual time=134.051..134.051 rows=0.00 loops=1)
+  Buffers: shared hit=15458 read=38325 dirtied=2
+  InitPlan 1
+    ->  Limit  (cost=113757.60..113757.60 rows=1 width=12) (actual time=133.820..133.820 rows=1.00 loops=1)
+          Output: appointments_1.appointment_id, appointments_1.slot_start
+          Buffers: shared hit=15419 read=38322
+          ->  Sort  (cost=113757.60..113757.71 rows=47 width=12) (actual time=133.819..133.819 rows=1.00 loops=1)
+                Output: appointments_1.appointment_id, appointments_1.slot_start
+                Sort Key: appointments_1.slot_start
+                Sort Method: top-N heapsort  Memory: 25kB
+                Buffers: shared hit=15419 read=38322
+                ->  Seq Scan on practo.appointments appointments_1  (cost=0.00..113757.36 rows=47 width=12) (actual time=50.434..133.647 rows=4280.00 loops=1)
+                      Output: appointments_1.appointment_id, appointments_1.slot_start
+                      Filter: ((appointments_1.slot_start >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (appointments_1.slot_start < '2026-07-02 00:00:00+05:30'::timestamp with time zone) AND ((appointments_1.status)::text = 'BOOKED'::text) AND ((appointments_1.consult_type)::text = 'IN_CLINIC'::text))
+                      Rows Removed by Filter: 2995720
+                      Buffers: shared hit=15416 read=38322
+  ->  Index Scan using appointments_pkey on practo.appointments  (cost=0.43..8.45 rows=1 width=56) (actual time=133.845..133.845 rows=1.00 loops=1)
+        Output: 'CHECKED_IN'::character varying(12), (appointments.slot_start - '00:05:00'::interval), appointments.ctid
+        Index Cond: (appointments.appointment_id = (InitPlan 1).col1)
+        Index Searches: 1
+        Buffers: shared hit=15421 read=38324
+Planning:
+  Buffers: shared hit=99
+Planning Time: 0.232 ms
+Execution Time: 134.533 ms
+=== W02 run 2 ===
+Update on practo.appointments  (cost=113758.03..113766.05 rows=0 width=0) (actual time=131.015..131.016 rows=0.00 loops=1)
+  Buffers: shared hit=15558 read=38228
+  InitPlan 1
+    ->  Limit  (cost=113757.60..113757.60 rows=1 width=12) (actual time=130.832..130.832 rows=1.00 loops=1)
+          Output: appointments_1.appointment_id, appointments_1.slot_start
+          Buffers: shared hit=15513 read=38228
+          ->  Sort  (cost=113757.60..113757.71 rows=47 width=12) (actual time=130.831..130.831 rows=1.00 loops=1)
+                Output: appointments_1.appointment_id, appointments_1.slot_start
+                Sort Key: appointments_1.slot_start
+                Sort Method: top-N heapsort  Memory: 25kB
+                Buffers: shared hit=15513 read=38228
+                ->  Seq Scan on practo.appointments appointments_1  (cost=0.00..113757.36 rows=47 width=12) (actual time=48.103..130.660 rows=4280.00 loops=1)
+                      Output: appointments_1.appointment_id, appointments_1.slot_start
+                      Filter: ((appointments_1.slot_start >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (appointments_1.slot_start < '2026-07-02 00:00:00+05:30'::timestamp with time zone) AND ((appointments_1.status)::text = 'BOOKED'::text) AND ((appointments_1.consult_type)::text = 'IN_CLINIC'::text))
+                      Rows Removed by Filter: 2995720
+                      Buffers: shared hit=15510 read=38228
+  ->  Index Scan using appointments_pkey on practo.appointments  (cost=0.43..8.45 rows=1 width=56) (actual time=130.849..130.849 rows=1.00 loops=1)
+        Output: 'CHECKED_IN'::character varying(12), (appointments.slot_start - '00:05:00'::interval), appointments.ctid
+        Index Cond: (appointments.appointment_id = (InitPlan 1).col1)
+        Index Searches: 1
+        Buffers: shared hit=15519 read=38228
+Planning:
+  Buffers: shared hit=99
+Planning Time: 0.188 ms
+Execution Time: 131.065 ms
+=== W02 run 3 ===
+Update on practo.appointments  (cost=113758.03..113766.05 rows=0 width=0) (actual time=135.964..135.964 rows=0.00 loops=1)
+  Buffers: shared hit=15652 read=38134
+  InitPlan 1
+    ->  Limit  (cost=113757.60..113757.60 rows=1 width=12) (actual time=135.782..135.782 rows=1.00 loops=1)
+          Output: appointments_1.appointment_id, appointments_1.slot_start
+          Buffers: shared hit=15607 read=38134
+          ->  Sort  (cost=113757.60..113757.71 rows=47 width=12) (actual time=135.781..135.781 rows=1.00 loops=1)
+                Output: appointments_1.appointment_id, appointments_1.slot_start
+                Sort Key: appointments_1.slot_start
+                Sort Method: top-N heapsort  Memory: 25kB
+                Buffers: shared hit=15607 read=38134
+                ->  Seq Scan on practo.appointments appointments_1  (cost=0.00..113757.36 rows=47 width=12) (actual time=50.140..135.607 rows=4280.00 loops=1)
+                      Output: appointments_1.appointment_id, appointments_1.slot_start
+                      Filter: ((appointments_1.slot_start >= '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (appointments_1.slot_start < '2026-07-02 00:00:00+05:30'::timestamp with time zone) AND ((appointments_1.status)::text = 'BOOKED'::text) AND ((appointments_1.consult_type)::text = 'IN_CLINIC'::text))
+                      Rows Removed by Filter: 2995720
+                      Buffers: shared hit=15604 read=38134
+  ->  Index Scan using appointments_pkey on practo.appointments  (cost=0.43..8.45 rows=1 width=56) (actual time=135.800..135.801 rows=1.00 loops=1)
+        Output: 'CHECKED_IN'::character varying(12), (appointments.slot_start - '00:05:00'::interval), appointments.ctid
+        Index Cond: (appointments.appointment_id = (InitPlan 1).col1)
+        Index Searches: 1
+        Buffers: shared hit=15613 read=38134
+Planning:
+  Buffers: shared hit=99
+Planning Time: 0.193 ms
+Execution Time: 136.015 ms

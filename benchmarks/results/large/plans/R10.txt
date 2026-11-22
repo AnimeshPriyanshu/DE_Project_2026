@@ -1,0 +1,267 @@
+=== R10 run 1 ===
+Gather Merge  (cost=133435.11..135098.25 rows=14280 width=76) (actual time=360.529..363.083 rows=13919.00 loops=1)
+  Output: pt.patient_id, pt.full_name, pt.allergies, i.medicine_name, p.issued_at
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=739083 read=137020
+  ->  Sort  (cost=132435.08..132449.96 rows=5950 width=76) (actual time=358.524..358.634 rows=4639.67 loops=3)
+        Output: pt.patient_id, pt.full_name, pt.allergies, i.medicine_name, p.issued_at
+        Sort Key: p.issued_at DESC
+        Sort Method: quicksort  Memory: 667kB
+        Buffers: shared hit=739083 read=137020
+        Worker 0:  actual time=357.178..357.284 rows=4597.00 loops=1
+          Sort Method: quicksort  Memory: 655kB
+          Buffers: shared hit=245184 read=45201
+        Worker 1:  actual time=357.984..358.094 rows=4602.00 loops=1
+          Sort Method: quicksort  Memory: 655kB
+          Buffers: shared hit=247288 read=45605
+        ->  Nested Loop  (cost=15567.50..132062.06 rows=5950 width=76) (actual time=15.941..357.731 rows=4639.67 loops=3)
+              Output: pt.patient_id, pt.full_name, pt.allergies, i.medicine_name, p.issued_at
+              Buffers: shared hit=739067 read=137020
+              Worker 0:  actual time=14.866..356.383 rows=4597.00 loops=1
+                Buffers: shared hit=245176 read=45201
+              Worker 1:  actual time=15.552..357.182 rows=4602.00 loops=1
+                Buffers: shared hit=247280 read=45605
+              ->  Nested Loop  (cost=15567.07..110196.87 rows=34217 width=63) (actual time=15.315..181.132 rows=28042.33 loops=3)
+                    Output: pt.patient_id, pt.full_name, pt.allergies, p.issued_at, p.prescription_id
+                    Inner Unique: true
+                    Buffers: shared hit=452455 read=86183
+                    Worker 0:  actual time=14.369..180.925 rows=27840.00 loops=1
+                      Buffers: shared hit=150302 read=28389
+                    Worker 1:  actual time=14.916..180.237 rows=28214.00 loops=1
+                      Buffers: shared hit=151157 read=28554
+                    ->  Parallel Hash Join  (cost=15566.64..85091.01 rows=52809 width=55) (actual time=14.867..102.220 rows=43257.33 loops=3)
+                          Output: pt.patient_id, pt.full_name, pt.allergies, a.appointment_id
+                          Inner Unique: true
+                          Hash Cond: (a.patient_id = pt.patient_id)
+                          Buffers: shared hit=1698 read=63495
+                          Worker 0:  actual time=13.936..101.382 rows=43132.00 loops=1
+                            Buffers: shared hit=589 read=20865
+                          Worker 1:  actual time=14.315..102.094 rows=43306.00 loops=1
+                            Buffers: shared hit=616 read=20962
+                          ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..66242.03 rows=1250403 width=8) (actual time=0.045..29.101 rows=1000000.00 loops=3)
+                                Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                Buffers: shared hit=1465 read=52273
+                                Worker 0:  actual time=0.059..29.051 rows=997269.00 loops=1
+                                  Buffers: shared hit=475 read=17383
+                                Worker 1:  actual time=0.056..29.150 rows=1001865.00 loops=1
+                                  Buffers: shared hit=502 read=17446
+                          ->  Parallel Hash  (cost=15390.67..15390.67 rows=14078 width=51) (actual time=14.788..14.788 rows=11499.00 loops=3)
+                                Output: pt.patient_id, pt.full_name, pt.allergies
+                                Buckets: 65536  Batches: 1  Memory Usage: 3680kB
+                                Buffers: shared hit=233 read=11222
+                                Worker 0:  actual time=13.861..13.861 rows=10782.00 loops=1
+                                  Buffers: shared hit=114 read=3482
+                                Worker 1:  actual time=14.241..14.241 rows=10733.00 loops=1
+                                  Buffers: shared hit=114 read=3516
+                                ->  Parallel Seq Scan on practo.patients pt  (cost=0.00..15390.67 rows=14078 width=51) (actual time=0.084..13.576 rows=11499.00 loops=3)
+                                      Output: pt.patient_id, pt.full_name, pt.allergies
+                                      Filter: (pt.allergies @> '{Penicillin}'::text[])
+                                      Rows Removed by Filter: 255168
+                                      Buffers: shared hit=233 read=11222
+                                      Worker 0:  actual time=0.104..12.716 rows=10782.00 loops=1
+                                        Buffers: shared hit=114 read=3482
+                                      Worker 1:  actual time=0.112..13.038 rows=10733.00 loops=1
+                                        Buffers: shared hit=114 read=3516
+                    ->  Index Scan using prescriptions_appointment_id_key on practo.prescriptions p  (cost=0.43..0.48 rows=1 width=16) (actual time=0.002..0.002 rows=0.65 loops=129772)
+                          Output: p.prescription_id, p.appointment_id, p.diagnosis, p.notes, p.follow_up_date, p.issued_at
+                          Index Cond: (p.appointment_id = a.appointment_id)
+                          Index Searches: 129772
+                          Buffers: shared hit=450757 read=22688
+                          Worker 0:  actual time=0.002..0.002 rows=0.65 loops=43132
+                            Buffers: shared hit=149713 read=7524
+                          Worker 1:  actual time=0.002..0.002 rows=0.65 loops=43306
+                            Buffers: shared hit=150541 read=7592
+              ->  Index Scan using prescription_items_pkey on practo.prescription_items i  (cost=0.43..0.63 rows=1 width=21) (actual time=0.006..0.006 rows=0.17 loops=84127)
+                    Output: i.prescription_id, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+                    Index Cond: (i.prescription_id = p.prescription_id)
+                    Filter: ((i.medicine_name)::text ~~* '%amoxicillin%'::text)
+                    Rows Removed by Filter: 2
+                    Index Searches: 84127
+                    Buffers: shared hit=286612 read=50837
+                    Worker 0:  actual time=0.006..0.006 rows=0.17 loops=27840
+                      Buffers: shared hit=94874 read=16812
+                    Worker 1:  actual time=0.006..0.006 rows=0.16 loops=28214
+                      Buffers: shared hit=96123 read=17051
+Planning:
+  Buffers: shared hit=400 read=9
+Planning Time: 1.066 ms
+Execution Time: 363.401 ms
+=== R10 run 2 ===
+Gather Merge  (cost=133435.11..135098.25 rows=14280 width=76) (actual time=232.614..235.287 rows=13919.00 loops=1)
+  Output: pt.patient_id, pt.full_name, pt.allergies, i.medicine_name, p.issued_at
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=737620 read=138483
+  ->  Sort  (cost=132435.08..132449.96 rows=5950 width=76) (actual time=230.826..230.950 rows=4639.67 loops=3)
+        Output: pt.patient_id, pt.full_name, pt.allergies, i.medicine_name, p.issued_at
+        Sort Key: p.issued_at DESC
+        Sort Method: quicksort  Memory: 667kB
+        Buffers: shared hit=737620 read=138483
+        Worker 0:  actual time=230.089..230.211 rows=4560.00 loops=1
+          Sort Method: quicksort  Memory: 651kB
+          Buffers: shared hit=245377 read=45996
+        Worker 1:  actual time=229.936..230.051 rows=4631.00 loops=1
+          Sort Method: quicksort  Memory: 658kB
+          Buffers: shared hit=244349 read=45643
+        ->  Nested Loop  (cost=15567.50..132062.06 rows=5950 width=76) (actual time=14.745..230.117 rows=4639.67 loops=3)
+              Output: pt.patient_id, pt.full_name, pt.allergies, i.medicine_name, p.issued_at
+              Buffers: shared hit=737604 read=138483
+              Worker 0:  actual time=14.038..229.399 rows=4560.00 loops=1
+                Buffers: shared hit=245369 read=45996
+              Worker 1:  actual time=13.909..229.225 rows=4631.00 loops=1
+                Buffers: shared hit=244341 read=45643
+              ->  Nested Loop  (cost=15567.07..110196.87 rows=34217 width=63) (actual time=14.588..144.303 rows=28042.33 loops=3)
+                    Output: pt.patient_id, pt.full_name, pt.allergies, p.issued_at, p.prescription_id
+                    Inner Unique: true
+                    Buffers: shared hit=450991 read=87647
+                    Worker 0:  actual time=13.833..143.771 rows=27981.00 loops=1
+                      Buffers: shared hit=150071 read=29051
+                    Worker 1:  actual time=13.809..143.193 rows=27814.00 loops=1
+                      Buffers: shared hit=149588 read=28836
+                    ->  Parallel Hash Join  (cost=15566.64..85091.01 rows=52809 width=55) (actual time=14.531..97.696 rows=43257.33 loops=3)
+                          Output: pt.patient_id, pt.full_name, pt.allergies, a.appointment_id
+                          Inner Unique: true
+                          Hash Cond: (a.patient_id = pt.patient_id)
+                          Buffers: shared hit=232 read=64961
+                          Worker 0:  actual time=13.741..97.105 rows=43171.00 loops=1
+                            Buffers: shared hit=114 read=21513
+                          Worker 1:  actual time=13.742..96.592 rows=43066.00 loops=1
+                            Buffers: shared hit=114 read=21297
+                          ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..66242.03 rows=1250403 width=8) (actual time=0.047..28.406 rows=1000000.00 loops=3)
+                                Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                Buffers: shared hit=1 read=53737
+                                Worker 0:  actual time=0.062..28.621 rows=999328.00 loops=1
+                                  Buffers: shared read=17905
+                                Worker 1:  actual time=0.064..28.061 rows=997361.00 loops=1
+                                  Buffers: shared read=17856
+                          ->  Parallel Hash  (cost=15390.67..15390.67 rows=14078 width=51) (actual time=14.452..14.452 rows=11499.00 loops=3)
+                                Output: pt.patient_id, pt.full_name, pt.allergies
+                                Buckets: 65536  Batches: 1  Memory Usage: 3680kB
+                                Buffers: shared hit=231 read=11224
+                                Worker 0:  actual time=13.658..13.658 rows=11088.00 loops=1
+                                  Buffers: shared hit=114 read=3608
+                                Worker 1:  actual time=13.663..13.663 rows=10403.00 loops=1
+                                  Buffers: shared hit=114 read=3441
+                                ->  Parallel Seq Scan on practo.patients pt  (cost=0.00..15390.67 rows=14078 width=51) (actual time=0.092..13.337 rows=11499.00 loops=3)
+                                      Output: pt.patient_id, pt.full_name, pt.allergies
+                                      Filter: (pt.allergies @> '{Penicillin}'::text[])
+                                      Rows Removed by Filter: 255168
+                                      Buffers: shared hit=231 read=11224
+                                      Worker 0:  actual time=0.112..12.650 rows=11088.00 loops=1
+                                        Buffers: shared hit=114 read=3608
+                                      Worker 1:  actual time=0.133..12.546 rows=10403.00 loops=1
+                                        Buffers: shared hit=114 read=3441
+                    ->  Index Scan using prescriptions_appointment_id_key on practo.prescriptions p  (cost=0.43..0.48 rows=1 width=16) (actual time=0.001..0.001 rows=0.65 loops=129772)
+                          Output: p.prescription_id, p.appointment_id, p.diagnosis, p.notes, p.follow_up_date, p.issued_at
+                          Index Cond: (p.appointment_id = a.appointment_id)
+                          Index Searches: 129772
+                          Buffers: shared hit=450759 read=22686
+                          Worker 0:  actual time=0.001..0.001 rows=0.65 loops=43171
+                            Buffers: shared hit=149957 read=7538
+                          Worker 1:  actual time=0.001..0.001 rows=0.65 loops=43066
+                            Buffers: shared hit=149474 read=7539
+              ->  Index Scan using prescription_items_pkey on practo.prescription_items i  (cost=0.43..0.63 rows=1 width=21) (actual time=0.003..0.003 rows=0.17 loops=84127)
+                    Output: i.prescription_id, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+                    Index Cond: (i.prescription_id = p.prescription_id)
+                    Filter: ((i.medicine_name)::text ~~* '%amoxicillin%'::text)
+                    Rows Removed by Filter: 2
+                    Index Searches: 84127
+                    Buffers: shared hit=286613 read=50836
+                    Worker 0:  actual time=0.003..0.003 rows=0.16 loops=27981
+                      Buffers: shared hit=95298 read=16945
+                    Worker 1:  actual time=0.003..0.003 rows=0.17 loops=27814
+                      Buffers: shared hit=94753 read=16807
+Planning:
+  Buffers: shared hit=341 read=68
+Planning Time: 1.532 ms
+Execution Time: 235.609 ms
+=== R10 run 3 ===
+Gather Merge  (cost=133435.11..135098.25 rows=14280 width=76) (actual time=237.719..240.295 rows=13919.00 loops=1)
+  Output: pt.patient_id, pt.full_name, pt.allergies, i.medicine_name, p.issued_at
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=737620 read=138483
+  ->  Sort  (cost=132435.08..132449.96 rows=5950 width=76) (actual time=235.773..235.894 rows=4639.67 loops=3)
+        Output: pt.patient_id, pt.full_name, pt.allergies, i.medicine_name, p.issued_at
+        Sort Key: p.issued_at DESC
+        Sort Method: quicksort  Memory: 655kB
+        Buffers: shared hit=737620 read=138483
+        Worker 0:  actual time=234.522..234.634 rows=4713.00 loops=1
+          Sort Method: quicksort  Memory: 666kB
+          Buffers: shared hit=249845 read=46633
+        Worker 1:  actual time=235.296..235.416 rows=4601.00 loops=1
+          Sort Method: quicksort  Memory: 655kB
+          Buffers: shared hit=242751 read=45723
+        ->  Nested Loop  (cost=15567.50..132062.06 rows=5950 width=76) (actual time=14.987..235.054 rows=4639.67 loops=3)
+              Output: pt.patient_id, pt.full_name, pt.allergies, i.medicine_name, p.issued_at
+              Buffers: shared hit=737604 read=138483
+              Worker 0:  actual time=14.319..233.766 rows=4713.00 loops=1
+                Buffers: shared hit=249837 read=46633
+              Worker 1:  actual time=14.282..234.581 rows=4601.00 loops=1
+                Buffers: shared hit=242743 read=45723
+              ->  Nested Loop  (cost=15567.07..110196.87 rows=34217 width=63) (actual time=14.818..147.381 rows=28042.33 loops=3)
+                    Output: pt.patient_id, pt.full_name, pt.allergies, p.issued_at, p.prescription_id
+                    Inner Unique: true
+                    Buffers: shared hit=450991 read=87647
+                    Worker 0:  actual time=14.109..146.591 rows=28534.00 loops=1
+                      Buffers: shared hit=152592 read=29406
+                    Worker 1:  actual time=14.037..147.085 rows=27717.00 loops=1
+                      Buffers: shared hit=148430 read=28872
+                    ->  Parallel Hash Join  (cost=15566.64..85091.01 rows=52809 width=55) (actual time=14.778..100.221 rows=43257.33 loops=3)
+                          Output: pt.patient_id, pt.full_name, pt.allergies, a.appointment_id
+                          Inner Unique: true
+                          Hash Cond: (a.patient_id = pt.patient_id)
+                          Buffers: shared hit=232 read=64961
+                          Worker 0:  actual time=14.021..99.438 rows=43889.00 loops=1
+                            Buffers: shared hit=114 read=21682
+                          Worker 1:  actual time=14.025..99.733 rows=42706.00 loops=1
+                            Buffers: shared hit=114 read=21352
+                          ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..66242.03 rows=1250403 width=8) (actual time=0.048..28.167 rows=1000000.00 loops=3)
+                                Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                Buffers: shared hit=1 read=53737
+                                Worker 0:  actual time=0.063..28.445 rows=1017533.00 loops=1
+                                  Buffers: shared read=18221
+                                Worker 1:  actual time=0.063..28.103 rows=993732.00 loops=1
+                                  Buffers: shared read=17805
+                          ->  Parallel Hash  (cost=15390.67..15390.67 rows=14078 width=51) (actual time=14.696..14.696 rows=11499.00 loops=3)
+                                Output: pt.patient_id, pt.full_name, pt.allergies
+                                Buckets: 65536  Batches: 1  Memory Usage: 3648kB
+                                Buffers: shared hit=231 read=11224
+                                Worker 0:  actual time=13.937..13.937 rows=10586.00 loops=1
+                                  Buffers: shared hit=114 read=3461
+                                Worker 1:  actual time=13.947..13.947 rows=10854.00 loops=1
+                                  Buffers: shared hit=114 read=3547
+                                ->  Parallel Seq Scan on practo.patients pt  (cost=0.00..15390.67 rows=14078 width=51) (actual time=0.076..13.576 rows=11499.00 loops=3)
+                                      Output: pt.patient_id, pt.full_name, pt.allergies
+                                      Filter: (pt.allergies @> '{Penicillin}'::text[])
+                                      Rows Removed by Filter: 255168
+                                      Buffers: shared hit=231 read=11224
+                                      Worker 0:  actual time=0.106..12.879 rows=10586.00 loops=1
+                                        Buffers: shared hit=114 read=3461
+                                      Worker 1:  actual time=0.100..12.873 rows=10854.00 loops=1
+                                        Buffers: shared hit=114 read=3547
+                    ->  Index Scan using prescriptions_appointment_id_key on practo.prescriptions p  (cost=0.43..0.48 rows=1 width=16) (actual time=0.001..0.001 rows=0.65 loops=129772)
+                          Output: p.prescription_id, p.appointment_id, p.diagnosis, p.notes, p.follow_up_date, p.issued_at
+                          Index Cond: (p.appointment_id = a.appointment_id)
+                          Index Searches: 129772
+                          Buffers: shared hit=450759 read=22686
+                          Worker 0:  actual time=0.001..0.001 rows=0.65 loops=43889
+                            Buffers: shared hit=152478 read=7724
+                          Worker 1:  actual time=0.001..0.001 rows=0.65 loops=42706
+                            Buffers: shared hit=148316 read=7520
+              ->  Index Scan using prescription_items_pkey on practo.prescription_items i  (cost=0.43..0.63 rows=1 width=21) (actual time=0.003..0.003 rows=0.17 loops=84127)
+                    Output: i.prescription_id, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+                    Index Cond: (i.prescription_id = p.prescription_id)
+                    Filter: ((i.medicine_name)::text ~~* '%amoxicillin%'::text)
+                    Rows Removed by Filter: 2
+                    Index Searches: 84127
+                    Buffers: shared hit=286613 read=50836
+                    Worker 0:  actual time=0.003..0.003 rows=0.17 loops=28534
+                      Buffers: shared hit=97245 read=17227
+                    Worker 1:  actual time=0.003..0.003 rows=0.17 loops=27717
+                      Buffers: shared hit=94313 read=16851
+Planning:
+  Buffers: shared hit=341 read=68
+Planning Time: 1.008 ms
+Execution Time: 240.617 ms

@@ -1,0 +1,249 @@
+=== R18 run 1 ===
+Unique  (cost=11502.16..12641.63 rows=7388 width=76) (actual time=32.036..44.637 rows=7200.00 loops=1)
+  Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+  Buffers: shared hit=1494 read=5616
+  ->  Gather Merge  (cost=11502.16..12551.53 rows=9010 width=76) (actual time=32.036..38.205 rows=57600.00 loops=1)
+        Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=1494 read=5616
+        ->  Sort  (cost=10502.14..10511.53 rows=3754 width=76) (actual time=30.014..30.438 rows=19200.00 loops=3)
+              Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+              Sort Key: d.consultation_fee, d.doctor_id, d.full_name, d.languages
+              Sort Method: quicksort  Memory: 2495kB
+              Buffers: shared hit=1494 read=5616
+              Worker 0:  actual time=29.897..30.343 rows=19515.00 loops=1
+                Sort Method: quicksort  Memory: 2464kB
+                Buffers: shared hit=539 read=1796
+              Worker 1:  actual time=29.000..29.419 rows=18201.00 loops=1
+                Sort Method: quicksort  Memory: 2348kB
+                Buffers: shared hit=539 read=1671
+              ->  Parallel Hash Join  (cost=2447.62..10279.26 rows=3754 width=76) (actual time=3.858..18.022 rows=19200.00 loops=3)
+                    Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+                    Inner Unique: true
+                    Hash Cond: (sc.doctor_id = d.doctor_id)
+                    Buffers: shared hit=1254 read=5616
+                    Worker 0:  actual time=3.154..17.248 rows=19515.00 loops=1
+                      Buffers: shared hit=419 read=1796
+                    Worker 1:  actual time=3.225..17.454 rows=18201.00 loops=1
+                      Buffers: shared hit=419 read=1671
+                    ->  Hash Join  (cost=836.00..8587.60 rows=30488 width=4) (actual time=1.406..13.892 rows=19200.00 loops=3)
+                          Output: sc.doctor_id
+                          Inner Unique: true
+                          Hash Cond: (sc.clinic_id = c.clinic_id)
+                          Buffers: shared hit=1248 read=4544
+                          Worker 0:  actual time=1.406..13.825 rows=19515.00 loops=1
+                            Buffers: shared hit=416 read=1531
+                          Worker 1:  actual time=1.408..13.967 rows=18201.00 loops=1
+                            Buffers: shared hit=416 read=1416
+                          ->  Parallel Seq Scan on practo.doctor_schedules sc  (cost=0.00..7084.61 rows=254061 width=8) (actual time=0.030..5.204 rows=203249.00 loops=3)
+                                Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+                                Buffers: shared read=4544
+                                Worker 0:  actual time=0.038..5.408 rows=207128.00 loops=1
+                                  Buffers: shared read=1531
+                                Worker 1:  actual time=0.039..4.880 rows=192032.00 loops=1
+                                  Buffers: shared read=1416
+                          ->  Hash  (cost=791.00..791.00 rows=3600 width=4) (actual time=1.367..1.367 rows=3600.00 loops=3)
+                                Output: c.clinic_id
+                                Buckets: 4096  Batches: 1  Memory Usage: 159kB
+                                Buffers: shared hit=1248
+                                Worker 0:  actual time=1.358..1.358 rows=3600.00 loops=1
+                                  Buffers: shared hit=416
+                                Worker 1:  actual time=1.360..1.360 rows=3600.00 loops=1
+                                  Buffers: shared hit=416
+                                ->  Seq Scan on practo.clinics c  (cost=0.00..791.00 rows=3600 width=4) (actual time=0.019..1.210 rows=3600.00 loops=3)
+                                      Output: c.clinic_id
+                                      Filter: (c.city_id = 5)
+                                      Rows Removed by Filter: 26400
+                                      Buffers: shared hit=1248
+                                      Worker 0:  actual time=0.028..1.220 rows=3600.00 loops=1
+                                        Buffers: shared hit=416
+                                      Worker 1:  actual time=0.022..1.171 rows=3600.00 loops=1
+                                        Buffers: shared hit=416
+                    ->  Parallel Hash  (cost=1557.29..1557.29 rows=4346 width=76) (actual time=2.436..2.436 rows=2400.00 loops=3)
+                          Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+                          Buckets: 8192  Batches: 1  Memory Usage: 864kB
+                          Buffers: shared hit=6 read=1072
+                          Worker 0:  actual time=1.734..1.734 rows=1571.00 loops=1
+                            Buffers: shared hit=3 read=265
+                          Worker 1:  actual time=1.809..1.809 rows=1789.00 loops=1
+                            Buffers: shared hit=3 read=255
+                          ->  Parallel Seq Scan on practo.doctors d  (cost=0.00..1557.29 rows=4346 width=76) (actual time=0.049..2.129 rows=2400.00 loops=3)
+                                Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+                                Filter: ('Tamil'::text = ANY (d.languages))
+                                Rows Removed by Filter: 17600
+                                Buffers: shared hit=6 read=1072
+                                Worker 0:  actual time=0.075..1.574 rows=1571.00 loops=1
+                                  Buffers: shared hit=3 read=265
+                                Worker 1:  actual time=0.049..1.626 rows=1789.00 loops=1
+                                  Buffers: shared hit=3 read=255
+Planning:
+  Buffers: shared hit=214 read=14
+Planning Time: 1.010 ms
+Execution Time: 44.828 ms
+=== R18 run 2 ===
+Unique  (cost=11502.16..12641.63 rows=7388 width=76) (actual time=32.192..47.044 rows=7200.00 loops=1)
+  Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+  Buffers: shared hit=2850 read=4260
+  ->  Gather Merge  (cost=11502.16..12551.53 rows=9010 width=76) (actual time=32.192..39.439 rows=57600.00 loops=1)
+        Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=2850 read=4260
+        ->  Sort  (cost=10502.14..10511.53 rows=3754 width=76) (actual time=30.409..30.849 rows=19200.00 loops=3)
+              Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+              Sort Key: d.consultation_fee, d.doctor_id, d.full_name, d.languages
+              Sort Method: quicksort  Memory: 2404kB
+              Buffers: shared hit=2850 read=4260
+              Worker 0:  actual time=30.015..30.490 rows=19863.00 loops=1
+                Sort Method: quicksort  Memory: 2493kB
+                Buffers: shared hit=863 read=1452
+              Worker 1:  actual time=29.942..30.393 rows=18899.00 loops=1
+                Sort Method: quicksort  Memory: 2410kB
+                Buffers: shared hit=905 read=1402
+              ->  Parallel Hash Join  (cost=2447.62..10279.26 rows=3754 width=76) (actual time=3.445..17.837 rows=19200.00 loops=3)
+                    Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+                    Inner Unique: true
+                    Hash Cond: (sc.doctor_id = d.doctor_id)
+                    Buffers: shared hit=2610 read=4260
+                    Worker 0:  actual time=2.650..16.816 rows=19863.00 loops=1
+                      Buffers: shared hit=743 read=1452
+                    Worker 1:  actual time=2.949..17.431 rows=18899.00 loops=1
+                      Buffers: shared hit=785 read=1402
+                    ->  Hash Join  (cost=836.00..8587.60 rows=30488 width=4) (actual time=1.367..14.092 rows=19200.00 loops=3)
+                          Output: sc.doctor_id
+                          Inner Unique: true
+                          Hash Cond: (sc.clinic_id = c.clinic_id)
+                          Buffers: shared hit=1532 read=4260
+                          Worker 0:  actual time=1.365..13.850 rows=19863.00 loops=1
+                            Buffers: shared hit=517 read=1452
+                          Worker 1:  actual time=1.369..14.164 rows=18899.00 loops=1
+                            Buffers: shared hit=496 read=1402
+                          ->  Parallel Seq Scan on practo.doctor_schedules sc  (cost=0.00..7084.61 rows=254061 width=8) (actual time=0.042..5.198 rows=203249.00 loops=3)
+                                Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+                                Buffers: shared hit=284 read=4260
+                                Worker 0:  actual time=0.049..5.390 rows=210120.00 loops=1
+                                  Buffers: shared hit=101 read=1452
+                                Worker 1:  actual time=0.051..5.211 rows=198832.00 loops=1
+                                  Buffers: shared hit=80 read=1402
+                          ->  Hash  (cost=791.00..791.00 rows=3600 width=4) (actual time=1.315..1.315 rows=3600.00 loops=3)
+                                Output: c.clinic_id
+                                Buckets: 4096  Batches: 1  Memory Usage: 159kB
+                                Buffers: shared hit=1248
+                                Worker 0:  actual time=1.308..1.308 rows=3600.00 loops=1
+                                  Buffers: shared hit=416
+                                Worker 1:  actual time=1.313..1.313 rows=3600.00 loops=1
+                                  Buffers: shared hit=416
+                                ->  Seq Scan on practo.clinics c  (cost=0.00..791.00 rows=3600 width=4) (actual time=0.017..1.169 rows=3600.00 loops=3)
+                                      Output: c.clinic_id
+                                      Filter: (c.city_id = 5)
+                                      Rows Removed by Filter: 26400
+                                      Buffers: shared hit=1248
+                                      Worker 0:  actual time=0.027..1.167 rows=3600.00 loops=1
+                                        Buffers: shared hit=416
+                                      Worker 1:  actual time=0.019..1.169 rows=3600.00 loops=1
+                                        Buffers: shared hit=416
+                    ->  Parallel Hash  (cost=1557.29..1557.29 rows=4346 width=76) (actual time=2.059..2.059 rows=2400.00 loops=3)
+                          Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+                          Buckets: 8192  Batches: 1  Memory Usage: 864kB
+                          Buffers: shared hit=1078
+                          Worker 0:  actual time=1.267..1.267 rows=1437.00 loops=1
+                            Buffers: shared hit=226
+                          Worker 1:  actual time=1.572..1.572 rows=1907.00 loops=1
+                            Buffers: shared hit=289
+                          ->  Parallel Seq Scan on practo.doctors d  (cost=0.00..1557.29 rows=4346 width=76) (actual time=0.006..1.856 rows=2400.00 loops=3)
+                                Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+                                Filter: ('Tamil'::text = ANY (d.languages))
+                                Rows Removed by Filter: 17600
+                                Buffers: shared hit=1078
+                                Worker 0:  actual time=0.006..1.143 rows=1437.00 loops=1
+                                  Buffers: shared hit=226
+                                Worker 1:  actual time=0.006..1.410 rows=1907.00 loops=1
+                                  Buffers: shared hit=289
+Planning:
+  Buffers: shared hit=228
+Planning Time: 0.429 ms
+Execution Time: 47.229 ms
+=== R18 run 3 ===
+Unique  (cost=11502.16..12641.63 rows=7388 width=76) (actual time=31.500..45.752 rows=7200.00 loops=1)
+  Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+  Buffers: shared hit=3132 read=3978
+  ->  Gather Merge  (cost=11502.16..12551.53 rows=9010 width=76) (actual time=31.500..38.287 rows=57600.00 loops=1)
+        Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=3132 read=3978
+        ->  Sort  (cost=10502.14..10511.53 rows=3754 width=76) (actual time=29.851..30.279 rows=19200.00 loops=3)
+              Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+              Sort Key: d.consultation_fee, d.doctor_id, d.full_name, d.languages
+              Sort Method: quicksort  Memory: 2418kB
+              Buffers: shared hit=3132 read=3978
+              Worker 0:  actual time=29.112..29.560 rows=19265.00 loops=1
+                Sort Method: quicksort  Memory: 2442kB
+                Buffers: shared hit=973 read=1314
+              Worker 1:  actual time=29.025..29.469 rows=19333.00 loops=1
+                Sort Method: quicksort  Memory: 2447kB
+                Buffers: shared hit=1001 read=1344
+              ->  Parallel Hash Join  (cost=2447.62..10279.26 rows=3754 width=76) (actual time=3.602..17.865 rows=19200.00 loops=3)
+                    Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+                    Inner Unique: true
+                    Hash Cond: (sc.doctor_id = d.doctor_id)
+                    Buffers: shared hit=2892 read=3978
+                    Worker 0:  actual time=2.837..17.047 rows=19265.00 loops=1
+                      Buffers: shared hit=853 read=1314
+                    Worker 1:  actual time=3.161..17.322 rows=19333.00 loops=1
+                      Buffers: shared hit=881 read=1344
+                    ->  Hash Join  (cost=836.00..8587.60 rows=30488 width=4) (actual time=1.522..14.131 rows=19200.00 loops=3)
+                          Output: sc.doctor_id
+                          Inner Unique: true
+                          Hash Cond: (sc.clinic_id = c.clinic_id)
+                          Buffers: shared hit=1814 read=3978
+                          Worker 0:  actual time=1.519..14.072 rows=19265.00 loops=1
+                            Buffers: shared hit=622 read=1314
+                          Worker 1:  actual time=1.527..14.033 rows=19333.00 loops=1
+                            Buffers: shared hit=599 read=1344
+                          ->  Parallel Seq Scan on practo.doctor_schedules sc  (cost=0.00..7084.61 rows=254061 width=8) (actual time=0.088..5.534 rows=203249.00 loops=3)
+                                Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+                                Buffers: shared hit=566 read=3978
+                                Worker 0:  actual time=0.124..5.655 rows=204467.00 loops=1
+                                  Buffers: shared hit=206 read=1314
+                                Worker 1:  actual time=0.083..5.555 rows=204136.00 loops=1
+                                  Buffers: shared hit=183 read=1344
+                          ->  Hash  (cost=791.00..791.00 rows=3600 width=4) (actual time=1.418..1.418 rows=3600.00 loops=3)
+                                Output: c.clinic_id
+                                Buckets: 4096  Batches: 1  Memory Usage: 159kB
+                                Buffers: shared hit=1248
+                                Worker 0:  actual time=1.382..1.382 rows=3600.00 loops=1
+                                  Buffers: shared hit=416
+                                Worker 1:  actual time=1.437..1.437 rows=3600.00 loops=1
+                                  Buffers: shared hit=416
+                                ->  Seq Scan on practo.clinics c  (cost=0.00..791.00 rows=3600 width=4) (actual time=0.033..1.250 rows=3600.00 loops=3)
+                                      Output: c.clinic_id
+                                      Filter: (c.city_id = 5)
+                                      Rows Removed by Filter: 26400
+                                      Buffers: shared hit=1248
+                                      Worker 0:  actual time=0.061..1.219 rows=3600.00 loops=1
+                                        Buffers: shared hit=416
+                                      Worker 1:  actual time=0.028..1.284 rows=3600.00 loops=1
+                                        Buffers: shared hit=416
+                    ->  Parallel Hash  (cost=1557.29..1557.29 rows=4346 width=76) (actual time=2.059..2.060 rows=2400.00 loops=3)
+                          Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+                          Buckets: 8192  Batches: 1  Memory Usage: 832kB
+                          Buffers: shared hit=1078
+                          Worker 0:  actual time=1.297..1.297 rows=1494.00 loops=1
+                            Buffers: shared hit=231
+                          Worker 1:  actual time=1.624..1.625 rows=1871.00 loops=1
+                            Buffers: shared hit=282
+                          ->  Parallel Seq Scan on practo.doctors d  (cost=0.00..1557.29 rows=4346 width=76) (actual time=0.005..1.860 rows=2400.00 loops=3)
+                                Output: d.doctor_id, d.full_name, d.languages, d.consultation_fee
+                                Filter: ('Tamil'::text = ANY (d.languages))
+                                Rows Removed by Filter: 17600
+                                Buffers: shared hit=1078
+                                Worker 0:  actual time=0.006..1.168 rows=1494.00 loops=1
+                                  Buffers: shared hit=231
+                                Worker 1:  actual time=0.006..1.463 rows=1871.00 loops=1
+                                  Buffers: shared hit=282
+Planning:
+  Buffers: shared hit=228
+Planning Time: 0.446 ms
+Execution Time: 45.936 ms

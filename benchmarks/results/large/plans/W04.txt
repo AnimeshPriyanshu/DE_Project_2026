@@ -1,0 +1,36 @@
+=== W04 run 1 ===
+Update on practo.appointments  (cost=0.00..98752.52 rows=0 width=0) (actual time=381.004..381.004 rows=0.00 loops=1)
+  Buffers: shared hit=64291 read=43770 dirtied=1694 written=157
+  ->  Seq Scan on practo.appointments  (cost=0.00..98752.52 rows=6824 width=48) (actual time=59.005..165.631 rows=6239.00 loops=1)
+        Output: 'NO_SHOW'::character varying(12), ctid
+        Filter: ((appointments.consult_ended_at IS NULL) AND ((appointments.status)::text = ANY ('{BOOKED,CHECKED_IN}'::text[])) AND (appointments.slot_end < '2026-07-02 00:00:00+05:30'::timestamp with time zone))
+        Rows Removed by Filter: 2993761
+        Buffers: shared hit=13601 read=40137 written=30
+Planning:
+  Buffers: shared hit=119
+Planning Time: 0.238 ms
+Execution Time: 381.055 ms
+=== W04 run 2 ===
+Update on practo.appointments  (cost=0.00..98925.27 rows=0 width=0) (actual time=187.468..187.468 rows=0.00 loops=1)
+  Buffers: shared hit=70736 read=39029 dirtied=470 written=240
+  ->  Seq Scan on practo.appointments  (cost=0.00..98925.27 rows=6836 width=48) (actual time=63.154..172.410 rows=6239.00 loops=1)
+        Output: 'NO_SHOW'::character varying(12), ctid
+        Filter: ((appointments.consult_ended_at IS NULL) AND ((appointments.status)::text = ANY ('{BOOKED,CHECKED_IN}'::text[])) AND (appointments.slot_end < '2026-07-02 00:00:00+05:30'::timestamp with time zone))
+        Rows Removed by Filter: 2993761
+        Buffers: shared hit=15054 read=38778 dirtied=376 written=2
+Planning:
+  Buffers: shared hit=119
+Planning Time: 0.222 ms
+Execution Time: 187.511 ms
+=== W04 run 3 ===
+Update on practo.appointments  (cost=0.00..99098.01 rows=0 width=0) (actual time=186.802..186.803 rows=0.00 loops=1)
+  Buffers: shared hit=71743 read=38635 dirtied=196 written=107
+  ->  Seq Scan on practo.appointments  (cost=0.00..99098.01 rows=6848 width=48) (actual time=63.085..172.221 rows=6239.00 loops=1)
+        Output: 'NO_SHOW'::character varying(12), ctid
+        Filter: ((appointments.consult_ended_at IS NULL) AND ((appointments.status)::text = ANY ('{BOOKED,CHECKED_IN}'::text[])) AND (appointments.slot_end < '2026-07-02 00:00:00+05:30'::timestamp with time zone))
+        Rows Removed by Filter: 2993761
+        Buffers: shared hit=15304 read=38622 dirtied=101 written=9
+Planning:
+  Buffers: shared hit=119
+Planning Time: 0.198 ms
+Execution Time: 186.843 ms

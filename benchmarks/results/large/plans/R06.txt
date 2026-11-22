@@ -1,0 +1,30 @@
+=== R06 run 1 ===
+Index Scan using patients_phone_key on practo.patients  (cost=0.42..8.44 rows=1 width=23) (actual time=0.340..0.340 rows=1.00 loops=1)
+  Output: patient_id, full_name, dob, blood_group
+  Index Cond: ((patients.phone)::text = '9400000090'::text)
+  Index Searches: 1
+  Buffers: shared read=4
+Planning:
+  Buffers: shared hit=105
+Planning Time: 0.201 ms
+Execution Time: 0.354 ms
+=== R06 run 2 ===
+Index Scan using patients_phone_key on practo.patients  (cost=0.42..8.44 rows=1 width=23) (actual time=0.010..0.010 rows=1.00 loops=1)
+  Output: patient_id, full_name, dob, blood_group
+  Index Cond: ((patients.phone)::text = '9400000090'::text)
+  Index Searches: 1
+  Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=105
+Planning Time: 0.193 ms
+Execution Time: 0.024 ms
+=== R06 run 3 ===
+Index Scan using patients_phone_key on practo.patients  (cost=0.42..8.44 rows=1 width=23) (actual time=0.010..0.011 rows=1.00 loops=1)
+  Output: patient_id, full_name, dob, blood_group
+  Index Cond: ((patients.phone)::text = '9400000090'::text)
+  Index Searches: 1
+  Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=105
+Planning Time: 0.195 ms
+Execution Time: 0.024 ms

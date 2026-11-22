@@ -1,0 +1,12 @@
+=== rewrite run 1 ===
+Planning Time: 1.430 ms
+Execution Time: 262.202 ms
+real 0.30
+=== rewrite run 2 ===
+Planning Time: 0.510 ms
+Execution Time: 248.240 ms
+real 0.27
+=== rewrite run 3 ===
+Planning Time: 0.567 ms
+Execution Time: 242.277 ms
+real 0.26

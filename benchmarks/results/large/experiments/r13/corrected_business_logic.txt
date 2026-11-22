@@ -1,0 +1,23 @@
+=== corrected business run 1 ===
+Hash Right Anti Join  (cost=1091.00..17304.08 rows=12438 width=35) (actual time=57.927..58.486 rows=10668.00 loops=1)
+  ->  Seq Scan on practo.doctor_schedules sc  (cost=0.00..10641.47 rows=609747 width=4) (actual time=0.043..18.394 rows=609747.00 loops=1)
+  ->  Hash  (cost=716.00..716.00 rows=30000 width=35) (actual time=6.618..6.619 rows=30000.00 loops=1)
+        ->  Seq Scan on practo.clinics c  (cost=0.00..716.00 rows=30000 width=35) (actual time=0.058..2.983 rows=30000.00 loops=1)
+Planning Time: 1.123 ms
+=== corrected business run 2 ===
+Hash Right Anti Join  (cost=1091.00..17304.08 rows=12438 width=35) (actual time=41.786..42.309 rows=10668.00 loops=1)
+  ->  Seq Scan on practo.doctor_schedules sc  (cost=0.00..10641.47 rows=609747 width=4) (actual time=0.032..13.899 rows=609747.00 loops=1)
+  ->  Hash  (cost=716.00..716.00 rows=30000 width=35) (actual time=2.986..2.986 rows=30000.00 loops=1)
+        ->  Seq Scan on practo.clinics c  (cost=0.00..716.00 rows=30000 width=35) (actual time=0.004..1.398 rows=30000.00 loops=1)
+Planning Time: 0.307 ms
+=== corrected business run 3 ===
+Hash Right Anti Join  (cost=1091.00..17304.08 rows=12438 width=35) (actual time=40.732..41.242 rows=10668.00 loops=1)
+  ->  Seq Scan on practo.doctor_schedules sc  (cost=0.00..10641.47 rows=609747 width=4) (actual time=0.033..13.822 rows=609747.00 loops=1)
+  ->  Hash  (cost=716.00..716.00 rows=30000 width=35) (actual time=2.804..2.804 rows=30000.00 loops=1)
+        ->  Seq Scan on practo.clinics c  (cost=0.00..716.00 rows=30000 width=35) (actual time=0.004..1.313 rows=30000.00 loops=1)
+Planning Time: 0.278 ms
+ corrected_rows 
+----------------
+          10668
+(1 row)
+

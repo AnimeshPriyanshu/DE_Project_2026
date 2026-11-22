@@ -1,0 +1,66 @@
+=== R07 run 1 ===
+Sort  (cost=22.25..22.25 rows=2 width=58) (actual time=0.362..0.363 rows=0.00 loops=1)
+  Output: p.diagnosis, p.follow_up_date, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+  Sort Key: i.line_no
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=3 read=3
+  ->  Nested Loop  (cost=0.86..22.24 rows=2 width=58) (actual time=0.357..0.357 rows=0.00 loops=1)
+        Output: p.diagnosis, p.follow_up_date, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+        Buffers: shared read=3
+        ->  Index Scan using prescriptions_appointment_id_key on practo.prescriptions p  (cost=0.43..8.45 rows=1 width=22) (actual time=0.357..0.357 rows=0.00 loops=1)
+              Output: p.prescription_id, p.appointment_id, p.diagnosis, p.notes, p.follow_up_date, p.issued_at
+              Index Cond: (p.appointment_id = 18872)
+              Index Searches: 1
+              Buffers: shared read=3
+        ->  Index Scan using prescription_items_pkey on practo.prescription_items i  (cost=0.43..13.75 rows=4 width=44) (never executed)
+              Output: i.prescription_id, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+              Index Cond: (i.prescription_id = p.prescription_id)
+              Index Searches: 0
+Planning:
+  Buffers: shared hit=225 read=21
+Planning Time: 2.821 ms
+Execution Time: 0.389 ms
+=== R07 run 2 ===
+Sort  (cost=22.25..22.25 rows=2 width=58) (actual time=0.012..0.013 rows=0.00 loops=1)
+  Output: p.diagnosis, p.follow_up_date, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+  Sort Key: i.line_no
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=6
+  ->  Nested Loop  (cost=0.86..22.24 rows=2 width=58) (actual time=0.007..0.007 rows=0.00 loops=1)
+        Output: p.diagnosis, p.follow_up_date, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+        Buffers: shared hit=3
+        ->  Index Scan using prescriptions_appointment_id_key on practo.prescriptions p  (cost=0.43..8.45 rows=1 width=22) (actual time=0.007..0.007 rows=0.00 loops=1)
+              Output: p.prescription_id, p.appointment_id, p.diagnosis, p.notes, p.follow_up_date, p.issued_at
+              Index Cond: (p.appointment_id = 18872)
+              Index Searches: 1
+              Buffers: shared hit=3
+        ->  Index Scan using prescription_items_pkey on practo.prescription_items i  (cost=0.43..13.75 rows=4 width=44) (never executed)
+              Output: i.prescription_id, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+              Index Cond: (i.prescription_id = p.prescription_id)
+              Index Searches: 0
+Planning:
+  Buffers: shared hit=246
+Planning Time: 0.359 ms
+Execution Time: 0.035 ms
+=== R07 run 3 ===
+Sort  (cost=22.25..22.25 rows=2 width=58) (actual time=0.010..0.010 rows=0.00 loops=1)
+  Output: p.diagnosis, p.follow_up_date, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+  Sort Key: i.line_no
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=6
+  ->  Nested Loop  (cost=0.86..22.24 rows=2 width=58) (actual time=0.005..0.005 rows=0.00 loops=1)
+        Output: p.diagnosis, p.follow_up_date, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+        Buffers: shared hit=3
+        ->  Index Scan using prescriptions_appointment_id_key on practo.prescriptions p  (cost=0.43..8.45 rows=1 width=22) (actual time=0.005..0.005 rows=0.00 loops=1)
+              Output: p.prescription_id, p.appointment_id, p.diagnosis, p.notes, p.follow_up_date, p.issued_at
+              Index Cond: (p.appointment_id = 18872)
+              Index Searches: 1
+              Buffers: shared hit=3
+        ->  Index Scan using prescription_items_pkey on practo.prescription_items i  (cost=0.43..13.75 rows=4 width=44) (never executed)
+              Output: i.prescription_id, i.line_no, i.medicine_name, i.dosage, i.duration_days, i.instructions
+              Index Cond: (i.prescription_id = p.prescription_id)
+              Index Searches: 0
+Planning:
+  Buffers: shared hit=246
+Planning Time: 0.385 ms
+Execution Time: 0.035 ms

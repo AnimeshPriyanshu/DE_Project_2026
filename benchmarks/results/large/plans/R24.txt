@@ -1,0 +1,204 @@
+=== R24 run 1 ===
+Gather Merge  (cost=672736.43..708492.82 rows=3378 width=20) (actual time=1080.677..1501.531 rows=11308.00 loops=1)
+  Output: a.doctor_id, a.slot_start, a.appointment_id, b.appointment_id
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=51164 read=163791, temp read=65003 written=65155
+  ->  Merge Join  (cost=671736.41..707102.89 rows=1408 width=20) (actual time=1038.428..1426.651 rows=3769.33 loops=3)
+        Output: a.doctor_id, a.slot_start, a.appointment_id, b.appointment_id
+        Merge Cond: ((a.slot_start = b.slot_start) AND (a.doctor_id = b.doctor_id))
+        Join Filter: (b.appointment_id > a.appointment_id)
+        Rows Removed by Join Filter: 904997
+        Buffers: shared hit=51164 read=163791, temp read=65003 written=65155
+        Worker 0:  actual time=1016.985..1389.546 rows=3662.00 loops=1
+          Buffers: shared hit=17442 read=53899, temp read=20461 written=20512
+        Worker 1:  actual time=1045.890..1417.797 rows=4058.00 loops=1
+          Buffers: shared hit=15713 read=56762, temp read=24111 written=24162
+        ->  Sort  (cost=201174.65..203977.32 rows=1121070 width=16) (actual time=241.867..273.712 rows=901227.33 loops=3)
+              Output: a.doctor_id, a.slot_start, a.appointment_id
+              Sort Key: a.slot_start DESC, a.doctor_id
+              Sort Method: external merge  Disk: 25856kB
+              Buffers: shared hit=11043 read=42713, temp read=13406 written=13447
+              Worker 0:  actual time=228.643..258.440 rows=885857.00 loops=1
+                Sort Method: external merge  Disk: 26096kB
+                Buffers: shared hit=3421 read=14182, temp read=3262 written=3276
+              Worker 1:  actual time=263.515..291.007 rows=940095.00 loops=1
+                Sort Method: external merge  Disk: 27688kB
+                Buffers: shared hit=4141 read=14596, temp read=6912 written=6926
+              ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..69368.04 rows=1121070 width=16) (actual time=0.048..80.402 rows=901227.33 loops=3)
+                    Output: a.doctor_id, a.slot_start, a.appointment_id
+                    Filter: ((a.status)::text <> 'CANCELLED'::text)
+                    Rows Removed by Filter: 98773
+                    Buffers: shared hit=11025 read=42713
+                    Worker 0:  actual time=0.041..80.699 rows=885857.00 loops=1
+                      Buffers: shared hit=3412 read=14182
+                    Worker 1:  actual time=0.071..76.001 rows=940095.00 loops=1
+                      Buffers: shared hit=4132 read=14596
+        ->  Materialize  (cost=470561.76..484014.60 rows=2690568 width=16) (actual time=796.024..998.745 rows=2701425.33 loops=3)
+              Output: b.appointment_id, b.doctor_id, b.slot_start
+              Storage: Memory  Maximum Storage: 17kB
+              Buffers: shared hit=40121 read=121078, temp read=51597 written=51708
+              Worker 0:  actual time=788.129..983.160 rows=2706495.00 loops=1
+                Buffers: shared hit=14021 read=39717, temp read=17199 written=17236
+              Worker 1:  actual time=781.272..976.140 rows=2691533.00 loops=1
+                Buffers: shared hit=11572 read=42166, temp read=17199 written=17236
+              ->  Sort  (cost=470561.76..477288.18 rows=2690568 width=16) (actual time=796.021..879.415 rows=2698382.67 loops=3)
+                    Output: b.appointment_id, b.doctor_id, b.slot_start
+                    Sort Key: b.slot_start DESC, b.doctor_id
+                    Sort Method: external merge  Disk: 68800kB
+                    Buffers: shared hit=40121 read=121078, temp read=51597 written=51708
+                    Worker 0:  actual time=788.126..867.113 rows=2703682.00 loops=1
+                      Sort Method: external merge  Disk: 68800kB
+                      Buffers: shared hit=14021 read=39717, temp read=17199 written=17236
+                    Worker 1:  actual time=781.270..861.336 rows=2687785.00 loops=1
+                      Sort Method: external merge  Disk: 68800kB
+                      Buffers: shared hit=11572 read=42166, temp read=17199 written=17236
+                    ->  Seq Scan on practo.appointments b  (cost=0.00..91250.10 rows=2690568 width=16) (actual time=0.023..226.252 rows=2703682.00 loops=3)
+                          Output: b.appointment_id, b.doctor_id, b.slot_start
+                          Filter: ((b.status)::text <> 'CANCELLED'::text)
+                          Rows Removed by Filter: 296318
+                          Buffers: shared hit=40121 read=121078
+                          Worker 0:  actual time=0.028..215.437 rows=2703682.00 loops=1
+                            Buffers: shared hit=14021 read=39717
+                          Worker 1:  actual time=0.024..224.889 rows=2703682.00 loops=1
+                            Buffers: shared hit=11572 read=42166
+Planning:
+  Buffers: shared hit=204
+Planning Time: 0.301 ms
+Execution Time: 1513.300 ms
+=== R24 run 2 ===
+Gather Merge  (cost=672736.43..708492.82 rows=3378 width=20) (actual time=1085.197..1505.389 rows=11308.00 loops=1)
+  Output: a.doctor_id, a.slot_start, a.appointment_id, b.appointment_id
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=58728 read=156242, temp read=61552 written=61705
+  ->  Merge Join  (cost=671736.41..707102.89 rows=1408 width=20) (actual time=1036.031..1437.754 rows=3769.33 loops=3)
+        Output: a.doctor_id, a.slot_start, a.appointment_id, b.appointment_id
+        Merge Cond: ((a.slot_start = b.slot_start) AND (a.doctor_id = b.doctor_id))
+        Join Filter: (b.appointment_id > a.appointment_id)
+        Rows Removed by Join Filter: 904997
+        Buffers: shared hit=58728 read=156242, temp read=61552 written=61705
+        Worker 0:  actual time=1043.422..1438.386 rows=3620.00 loops=1
+          Buffers: shared hit=19531 read=51752, temp read=20448 written=20499
+        Worker 1:  actual time=1029.364..1420.023 rows=3777.00 loops=1
+          Buffers: shared hit=21607 read=49676, temp read=20449 written=20500
+        ->  Sort  (cost=201174.65..203977.32 rows=1121070 width=16) (actual time=230.028..264.467 rows=901227.33 loops=3)
+              Output: a.doctor_id, a.slot_start, a.appointment_id
+              Sort Key: a.slot_start DESC, a.doctor_id
+              Sort Method: external merge  Disk: 27648kB
+              Buffers: shared hit=12587 read=41169, temp read=9955 written=9997
+              Worker 0:  actual time=228.126..261.023 rows=882341.00 loops=1
+                Sort Method: external merge  Disk: 25992kB
+                Buffers: shared hit=4002 read=13543, temp read=3249 written=3263
+              Worker 1:  actual time=226.559..261.341 rows=882584.00 loops=1
+                Sort Method: external merge  Disk: 26000kB
+                Buffers: shared hit=4178 read=13367, temp read=3250 written=3264
+              ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..69368.04 rows=1121070 width=16) (actual time=0.033..74.599 rows=901227.33 loops=3)
+                    Output: a.doctor_id, a.slot_start, a.appointment_id
+                    Filter: ((a.status)::text <> 'CANCELLED'::text)
+                    Rows Removed by Filter: 98773
+                    Buffers: shared hit=12569 read=41169
+                    Worker 0:  actual time=0.035..73.290 rows=882341.00 loops=1
+                      Buffers: shared hit=3993 read=13543
+                    Worker 1:  actual time=0.033..75.187 rows=882584.00 loops=1
+                      Buffers: shared hit=4169 read=13367
+        ->  Materialize  (cost=470561.76..484014.60 rows=2690568 width=16) (actual time=805.665..1015.935 rows=2703834.00 loops=3)
+              Output: b.appointment_id, b.doctor_id, b.slot_start
+              Storage: Memory  Maximum Storage: 17kB
+              Buffers: shared hit=46141 read=115073, temp read=51597 written=51708
+              Worker 0:  actual time=815.033..1022.250 rows=2706379.00 loops=1
+                Buffers: shared hit=15529 read=38209, temp read=17199 written=17236
+              Worker 1:  actual time=802.586..1010.116 rows=2706525.00 loops=1
+                Buffers: shared hit=17429 read=36309, temp read=17199 written=17236
+              ->  Sort  (cost=470561.76..477288.18 rows=2690568 width=16) (actual time=805.663..893.667 rows=2700804.67 loops=3)
+                    Output: b.appointment_id, b.doctor_id, b.slot_start
+                    Sort Key: b.slot_start DESC, b.doctor_id
+                    Sort Method: external merge  Disk: 68800kB
+                    Buffers: shared hit=46141 read=115073, temp read=51597 written=51708
+                    Worker 0:  actual time=815.031..899.518 rows=2703682.00 loops=1
+                      Sort Method: external merge  Disk: 68800kB
+                      Buffers: shared hit=15529 read=38209, temp read=17199 written=17236
+                    Worker 1:  actual time=802.584..892.778 rows=2703681.00 loops=1
+                      Sort Method: external merge  Disk: 68800kB
+                      Buffers: shared hit=17429 read=36309, temp read=17199 written=17236
+                    ->  Seq Scan on practo.appointments b  (cost=0.00..91250.10 rows=2690568 width=16) (actual time=0.007..229.982 rows=2703682.00 loops=3)
+                          Output: b.appointment_id, b.doctor_id, b.slot_start
+                          Filter: ((b.status)::text <> 'CANCELLED'::text)
+                          Rows Removed by Filter: 296318
+                          Buffers: shared hit=46141 read=115073
+                          Worker 0:  actual time=0.006..236.231 rows=2703682.00 loops=1
+                            Buffers: shared hit=15529 read=38209
+                          Worker 1:  actual time=0.007..222.920 rows=2703682.00 loops=1
+                            Buffers: shared hit=17429 read=36309
+Planning:
+  Buffers: shared hit=204
+Planning Time: 0.253 ms
+Execution Time: 1521.903 ms
+=== R24 run 3 ===
+Gather Merge  (cost=672736.43..708492.82 rows=3378 width=20) (actual time=1083.732..1474.331 rows=11308.00 loops=1)
+  Output: a.doctor_id, a.slot_start, a.appointment_id, b.appointment_id
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=59565 read=155405, temp read=61551 written=61704
+  ->  Merge Join  (cost=671736.41..707102.89 rows=1408 width=20) (actual time=1012.181..1395.658 rows=3769.33 loops=3)
+        Output: a.doctor_id, a.slot_start, a.appointment_id, b.appointment_id
+        Merge Cond: ((a.slot_start = b.slot_start) AND (a.doctor_id = b.doctor_id))
+        Join Filter: (b.appointment_id > a.appointment_id)
+        Rows Removed by Join Filter: 904997
+        Buffers: shared hit=59565 read=155405, temp read=61551 written=61704
+        Worker 0:  actual time=1041.497..1425.522 rows=3646.00 loops=1
+          Buffers: shared hit=19851 read=51504, temp read=20464 written=20515
+        Worker 1:  actual time=999.286..1391.699 rows=3719.00 loops=1
+          Buffers: shared hit=19419 read=51848, temp read=20450 written=20501
+        ->  Sort  (cost=201174.65..203977.32 rows=1121070 width=16) (actual time=234.541..266.585 rows=901227.33 loops=3)
+              Output: a.doctor_id, a.slot_start, a.appointment_id
+              Sort Key: a.slot_start DESC, a.doctor_id
+              Sort Method: external merge  Disk: 27504kB
+              Buffers: shared hit=13905 read=39851, temp read=9954 written=9996
+              Worker 0:  actual time=231.090..263.387 rows=886775.00 loops=1
+                Sort Method: external merge  Disk: 26120kB
+                Buffers: shared hit=4678 read=12939, temp read=3265 written=3279
+              Worker 1:  actual time=232.894..265.125 rows=882939.00 loops=1
+                Sort Method: external merge  Disk: 26008kB
+                Buffers: shared hit=4287 read=13242, temp read=3251 written=3265
+              ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..69368.04 rows=1121070 width=16) (actual time=0.024..76.559 rows=901227.33 loops=3)
+                    Output: a.doctor_id, a.slot_start, a.appointment_id
+                    Filter: ((a.status)::text <> 'CANCELLED'::text)
+                    Rows Removed by Filter: 98773
+                    Buffers: shared hit=13887 read=39851
+                    Worker 0:  actual time=0.030..76.283 rows=886775.00 loops=1
+                      Buffers: shared hit=4669 read=12939
+                    Worker 1:  actual time=0.005..75.568 rows=882939.00 loops=1
+                      Buffers: shared hit=4278 read=13242
+        ->  Materialize  (cost=470561.76..484014.60 rows=2690568 width=16) (actual time=776.415..977.993 rows=2706296.00 loops=3)
+              Output: b.appointment_id, b.doctor_id, b.slot_start
+              Storage: Memory  Maximum Storage: 17kB
+              Buffers: shared hit=45660 read=115554, temp read=51597 written=51708
+              Worker 0:  actual time=810.164..1015.520 rows=2706241.00 loops=1
+                Buffers: shared hit=15173 read=38565, temp read=17199 written=17236
+              Worker 1:  actual time=766.144..969.530 rows=2706178.00 loops=1
+                Buffers: shared hit=15132 read=38606, temp read=17199 written=17236
+              ->  Sort  (cost=470561.76..477288.18 rows=2690568 width=16) (actual time=776.413..860.168 rows=2703589.00 loops=3)
+                    Output: b.appointment_id, b.doctor_id, b.slot_start
+                    Sort Key: b.slot_start DESC, b.doctor_id
+                    Sort Method: external merge  Disk: 68800kB
+                    Buffers: shared hit=45660 read=115554, temp read=51597 written=51708
+                    Worker 0:  actual time=810.162..898.998 rows=2703682.00 loops=1
+                      Sort Method: external merge  Disk: 68800kB
+                      Buffers: shared hit=15173 read=38565, temp read=17199 written=17236
+                    Worker 1:  actual time=766.143..848.213 rows=2703631.00 loops=1
+                      Sort Method: external merge  Disk: 68800kB
+                      Buffers: shared hit=15132 read=38606, temp read=17199 written=17236
+                    ->  Seq Scan on practo.appointments b  (cost=0.00..91250.10 rows=2690568 width=16) (actual time=0.009..214.478 rows=2703682.00 loops=3)
+                          Output: b.appointment_id, b.doctor_id, b.slot_start
+                          Filter: ((b.status)::text <> 'CANCELLED'::text)
+                          Rows Removed by Filter: 296318
+                          Buffers: shared hit=45660 read=115554
+                          Worker 0:  actual time=0.007..226.915 rows=2703682.00 loops=1
+                            Buffers: shared hit=15173 read=38565
+                          Worker 1:  actual time=0.016..213.197 rows=2703682.00 loops=1
+                            Buffers: shared hit=15132 read=38606
+Planning:
+  Buffers: shared hit=204
+Planning Time: 0.267 ms
+Execution Time: 1486.117 ms

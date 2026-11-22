@@ -1,0 +1,66 @@
+                                                                                                                                     QUERY PLAN                                                                                                                                      
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=485878560.70..485878566.63 rows=2370 width=36) (actual time=9630.399..9630.401 rows=40.00 loops=1)
+   Output: d.doctor_id, d.full_name, ((SubPlan 1)), ((SubPlan 2))
+   Sort Key: ((SubPlan 1)) DESC
+   Sort Method: quicksort  Memory: 27kB
+   Buffers: shared hit=819029 read=3480414, local hit=1
+   ->  Nested Loop Semi Join  (cost=42.88..485878427.86 rows=2370 width=36) (actual time=254.124..9630.360 rows=40.00 loops=1)
+         Output: d.doctor_id, d.full_name, (SubPlan 1), (SubPlan 2)
+         Buffers: shared hit=819026 read=3480414, local hit=1
+         ->  Nested Loop  (cost=42.16..1291.99 rows=2550 width=24) (actual time=0.012..0.270 rows=40.00 loops=1)
+               Output: d.doctor_id, d.full_name, sample_doctors.doctor_id
+               Inner Unique: true
+               Buffers: shared hit=120, local hit=1
+               ->  HashAggregate  (cost=41.88..43.88 rows=200 width=4) (actual time=0.010..0.042 rows=40.00 loops=1)
+                     Output: sample_doctors.doctor_id
+                     Group Key: sample_doctors.doctor_id
+                     Batches: 1  Memory Usage: 32kB
+                     Buffers: local hit=1
+                     ->  Seq Scan on pg_temp.sample_doctors  (cost=0.00..35.50 rows=2550 width=4) (actual time=0.004..0.005 rows=40.00 loops=1)
+                           Output: sample_doctors.doctor_id
+                           Buffers: local hit=1
+               ->  Index Scan using doctors_pkey on practo.doctors d  (cost=0.29..6.47 rows=1 width=20) (actual time=0.004..0.004 rows=1.00 loops=40)
+                     Output: d.doctor_id, d.full_name, d.registration_no, d.gender, d.experience_years, d.consultation_fee, d.video_fee, d.languages, d.is_verified, d.joined_on
+                     Index Cond: (d.doctor_id = sample_doctors.doctor_id)
+                     Index Searches: 40
+                     Buffers: shared hit=120
+         ->  Nested Loop  (cost=0.71..4.50 rows=2 width=4) (actual time=0.006..0.006 rows=1.00 loops=40)
+               Output: sc.doctor_id
+               Inner Unique: true
+               Buffers: shared hit=280
+               ->  Index Scan using doctor_schedules_pkey on practo.doctor_schedules sc  (cost=0.42..1.08 rows=11 width=8) (actual time=0.003..0.003 rows=1.00 loops=40)
+                     Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+                     Index Cond: (sc.doctor_id = d.doctor_id)
+                     Index Searches: 40
+                     Buffers: shared hit=160
+               ->  Index Scan using clinics_pkey on practo.clinics c  (cost=0.29..0.31 rows=1 width=4) (actual time=0.003..0.003 rows=1.00 loops=40)
+                     Output: c.clinic_id, c.clinic_name, c.city_id, c.locality, c.latitude, c.longitude, c.phone
+                     Index Cond: (c.clinic_id = sc.clinic_id)
+                     Filter: (c.city_id = 1)
+                     Index Searches: 40
+                     Buffers: shared hit=120
+         SubPlan 1
+           ->  Aggregate  (cost=113757.37..113757.38 rows=1 width=8) (actual time=133.067..133.067 rows=1.00 loops=40)
+                 Output: count(*)
+                 Buffers: shared hit=409266 read=1740254
+                 ->  Seq Scan on practo.appointments a  (cost=0.00..113757.36 rows=3 width=0) (actual time=48.521..133.061 rows=10.80 loops=40)
+                       Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                       Filter: ((a.slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (a.slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND (a.doctor_id = d.doctor_id) AND ((a.status)::text = 'COMPLETED'::text))
+                       Rows Removed by Filter: 2999989
+                       Buffers: shared hit=409266 read=1740254
+         SubPlan 2
+           ->  Aggregate  (cost=91250.24..91250.25 rows=1 width=8) (actual time=107.674..107.674 rows=1.00 loops=40)
+                 Output: max(a_1.consult_ended_at)
+                 Buffers: shared hit=409360 read=1740160
+                 ->  Seq Scan on practo.appointments a_1  (cost=0.00..91250.10 rows=56 width=8) (actual time=0.550..107.642 rows=227.75 loops=40)
+                       Output: a_1.appointment_id, a_1.patient_id, a_1.doctor_id, a_1.clinic_id, a_1.consult_type, a_1.booked_at, a_1.slot_start, a_1.slot_end, a_1.reason, a_1.status, a_1.checked_in_at, a_1.consult_started_at, a_1.consult_ended_at, a_1.fee, a_1.payment_status
+                       Filter: (a_1.doctor_id = d.doctor_id)
+                       Rows Removed by Filter: 2999772
+                       Buffers: shared hit=409360 read=1740160
+ Planning:
+   Buffers: shared hit=94
+ Planning Time: 0.290 ms
+ Execution Time: 9630.451 ms
+(62 rows)
+

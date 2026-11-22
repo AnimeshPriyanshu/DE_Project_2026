@@ -1,0 +1,82 @@
+                                                                                                                                                                                                                    QUERY PLAN                                                                                                                                                                                                                    
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=123523.18..123662.62 rows=55776 width=36) (actual time=348.759..349.010 rows=9600.00 loops=1)
+   Output: d.doctor_id, d.full_name, (COALESCE(g.june_consults, '0'::bigint)), g.last_consult_at
+   Sort Key: (COALESCE(g.june_consults, '0'::bigint)) DESC
+   Sort Method: quicksort  Memory: 910kB
+   Buffers: shared hit=10301 read=49472 written=1
+   ->  Hash Left Join  (cost=105472.28..119125.98 rows=55776 width=36) (actual time=303.032..347.984 rows=9600.00 loops=1)
+         Output: d.doctor_id, d.full_name, COALESCE(g.june_consults, '0'::bigint), g.last_consult_at
+         Inner Unique: true
+         Hash Cond: (d.doctor_id = g.doctor_id)
+         Buffers: shared hit=10298 read=49472 written=1
+         ->  Hash Right Semi Join  (cost=3273.00..16780.28 rows=55776 width=20) (actual time=9.337..51.579 rows=9600.00 loops=1)
+               Output: d.doctor_id, d.full_name
+               Inner Unique: true
+               Hash Cond: (sc.doctor_id = d.doctor_id)
+               Buffers: shared hit=440 read=5592
+               ->  Hash Join  (cost=851.00..13093.23 rows=97560 width=4) (actual time=2.470..39.029 rows=78000.00 loops=1)
+                     Output: sc.doctor_id
+                     Inner Unique: true
+                     Hash Cond: (sc.clinic_id = c.clinic_id)
+                     Buffers: shared hit=435 read=4525
+                     ->  Seq Scan on practo.doctor_schedules sc  (cost=0.00..10641.47 rows=609747 width=8) (actual time=0.071..15.088 rows=609747.00 loops=1)
+                           Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+                           Buffers: shared hit=19 read=4525
+                     ->  Hash  (cost=791.00..791.00 rows=4800 width=4) (actual time=2.386..2.386 rows=4800.00 loops=1)
+                           Output: c.clinic_id
+                           Buckets: 8192  Batches: 1  Memory Usage: 233kB
+                           Buffers: shared hit=416
+                           ->  Seq Scan on practo.clinics c  (cost=0.00..791.00 rows=4800 width=4) (actual time=0.007..2.019 rows=4800.00 loops=1)
+                                 Output: c.clinic_id
+                                 Filter: (c.city_id = 1)
+                                 Rows Removed by Filter: 25200
+                                 Buffers: shared hit=416
+               ->  Hash  (cost=1672.00..1672.00 rows=60000 width=20) (actual time=6.813..6.814 rows=60000.00 loops=1)
+                     Output: d.doctor_id, d.full_name
+                     Buckets: 65536  Batches: 1  Memory Usage: 3573kB
+                     Buffers: shared hit=5 read=1067
+                     ->  Seq Scan on practo.doctors d  (cost=0.00..1672.00 rows=60000 width=20) (actual time=0.009..3.587 rows=60000.00 loops=1)
+                           Output: d.doctor_id, d.full_name
+                           Buffers: shared hit=5 read=1067
+         ->  Hash  (cost=101525.35..101525.35 rows=53914 width=20) (actual time=293.657..293.675 rows=60000.00 loops=1)
+               Output: g.june_consults, g.last_consult_at, g.doctor_id
+               Buckets: 65536  Batches: 1  Memory Usage: 3559kB
+               Buffers: shared hit=9858 read=43880 written=1
+               ->  Subquery Scan on g  (cost=100447.07..101525.35 rows=53914 width=20) (actual time=284.368..290.629 rows=60000.00 loops=1)
+                     Output: g.june_consults, g.last_consult_at, g.doctor_id
+                     Buffers: shared hit=9858 read=43880 written=1
+                     ->  Finalize HashAggregate  (cost=100447.07..100986.21 rows=53914 width=20) (actual time=284.367..288.277 rows=60000.00 loops=1)
+                           Output: appointments.doctor_id, count(*) FILTER (WHERE (((appointments.status)::text = 'COMPLETED'::text) AND (appointments.slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (appointments.slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))), max(appointments.consult_ended_at)
+                           Group Key: appointments.doctor_id
+                           Batches: 1  Memory Usage: 5401kB
+                           Buffers: shared hit=9858 read=43880 written=1
+                           ->  Gather  (cost=85998.08..99476.62 rows=129394 width=20) (actual time=250.584..261.985 rows=180000.00 loops=1)
+                                 Output: appointments.doctor_id, (PARTIAL count(*) FILTER (WHERE (((appointments.status)::text = 'COMPLETED'::text) AND (appointments.slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (appointments.slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone)))), (PARTIAL max(appointments.consult_ended_at))
+                                 Workers Planned: 2
+                                 Workers Launched: 2
+                                 Buffers: shared hit=9858 read=43880 written=1
+                                 ->  Partial HashAggregate  (cost=84998.08..85537.22 rows=53914 width=20) (actual time=248.705..254.102 rows=60000.00 loops=3)
+                                       Output: appointments.doctor_id, PARTIAL count(*) FILTER (WHERE (((appointments.status)::text = 'COMPLETED'::text) AND (appointments.slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (appointments.slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone))), PARTIAL max(appointments.consult_ended_at)
+                                       Group Key: appointments.doctor_id
+                                       Batches: 1  Memory Usage: 5401kB
+                                       Buffers: shared hit=9858 read=43880 written=1
+                                       Worker 0:  actual time=247.988..253.534 rows=60000.00 loops=1
+                                         Batches: 1  Memory Usage: 5401kB
+                                         Buffers: shared hit=3298 read=14652
+                                       Worker 1:  actual time=247.648..252.433 rows=60000.00 loops=1
+                                         Batches: 1  Memory Usage: 5401kB
+                                         Buffers: shared hit=3253 read=14295 written=1
+                                       ->  Parallel Seq Scan on practo.appointments  (cost=0.00..66242.03 rows=1250403 width=29) (actual time=0.050..40.941 rows=1000000.00 loops=3)
+                                             Output: appointments.appointment_id, appointments.patient_id, appointments.doctor_id, appointments.clinic_id, appointments.consult_type, appointments.booked_at, appointments.slot_start, appointments.slot_end, appointments.reason, appointments.status, appointments.checked_in_at, appointments.consult_started_at, appointments.consult_ended_at, appointments.fee, appointments.payment_status
+                                             Buffers: shared hit=9858 read=43880 written=1
+                                             Worker 0:  actual time=0.072..41.029 rows=1001730.00 loops=1
+                                               Buffers: shared hit=3298 read=14652
+                                             Worker 1:  actual time=0.047..40.470 rows=980013.00 loops=1
+                                               Buffers: shared hit=3253 read=14295 written=1
+ Planning:
+   Buffers: shared hit=252
+ Planning Time: 1.303 ms
+ Execution Time: 349.504 ms
+(78 rows)
+

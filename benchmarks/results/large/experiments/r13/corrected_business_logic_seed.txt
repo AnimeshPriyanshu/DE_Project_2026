@@ -1,0 +1,13 @@
+# R13 corrected business query on seed database Practo (2026-11-22)
+# SQL: NOT EXISTS (... sc.clinic_id = c.clinic_id)
+
+ seed_corrected_rows 
+---------------------
+                 292
+(1 row)
+
+ clinics | schedules | null_schedules 
+---------+-----------+----------------
+    1500 |     30499 |           5899
+(1 row)
+

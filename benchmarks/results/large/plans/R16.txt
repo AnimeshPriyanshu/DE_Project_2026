@@ -1,0 +1,201 @@
+=== R16 run 1 ===
+Limit  (cost=87718.71..87718.76 rows=20 width=71) (actual time=86.187..86.203 rows=20.00 loops=1)
+  Output: c.clinic_id, c.clinic_name, (count(*)), (sum(a.fee))
+  Buffers: shared hit=7441 read=47548, temp read=12 written=34
+  ->  Sort  (cost=87718.71..87793.71 rows=30000 width=71) (actual time=86.186..86.202 rows=20.00 loops=1)
+        Output: c.clinic_id, c.clinic_name, (count(*)), (sum(a.fee))
+        Sort Key: (sum(a.fee)) DESC
+        Sort Method: top-N heapsort  Memory: 28kB
+        Buffers: shared hit=7441 read=47548, temp read=12 written=34
+        ->  Finalize HashAggregate  (cost=86545.42..86920.42 rows=30000 width=71) (actual time=82.360..84.781 rows=18476.00 loops=1)
+              Output: c.clinic_id, c.clinic_name, count(*), sum(a.fee)
+              Group Key: c.clinic_id
+              Batches: 5  Memory Usage: 8497kB  Disk Usage: 216kB
+              Buffers: shared hit=7438 read=47548, temp read=12 written=34
+              ->  Gather  (cost=78250.42..85825.42 rows=72000 width=71) (actual time=67.769..71.919 rows=42541.00 loops=1)
+                    Output: c.clinic_id, c.clinic_name, (PARTIAL count(*)), (PARTIAL sum(a.fee))
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=7438 read=47548
+                    ->  Partial HashAggregate  (cost=77250.42..77625.42 rows=30000 width=71) (actual time=66.398..69.401 rows=14180.33 loops=3)
+                          Output: c.clinic_id, c.clinic_name, PARTIAL count(*), PARTIAL sum(a.fee)
+                          Group Key: c.clinic_id
+                          Batches: 1  Memory Usage: 6161kB
+                          Buffers: shared hit=7438 read=47548
+                          Worker 0:  actual time=65.707..68.891 rows=14141.00 loops=1
+                            Batches: 1  Memory Usage: 5905kB
+                            Buffers: shared hit=2589 read=15732
+                          Worker 1:  actual time=65.804..68.722 rows=13876.00 loops=1
+                            Batches: 1  Memory Usage: 5905kB
+                            Buffers: shared hit=2569 read=15563
+                          ->  Hash Join  (cost=1091.00..76850.90 rows=53269 width=36) (actual time=3.202..60.682 rows=32551.67 loops=3)
+                                Output: c.clinic_id, c.clinic_name, a.fee
+                                Inner Unique: true
+                                Hash Cond: (a.clinic_id = c.clinic_id)
+                                Buffers: shared hit=7438 read=47548
+                                Worker 0:  actual time=2.978..60.147 rows=31868.00 loops=1
+                                  Buffers: shared hit=2589 read=15732
+                                Worker 1:  actual time=3.304..60.333 rows=30623.00 loops=1
+                                  Buffers: shared hit=2569 read=15563
+                                ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..75620.06 rows=53269 width=9) (actual time=0.005..53.139 rows=42364.00 loops=3)
+                                      Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                      Filter: ((a.slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (a.slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND ((a.payment_status)::text = 'PAID'::text))
+                                      Rows Removed by Filter: 957636
+                                      Buffers: shared hit=6606 read=47132
+                                      Worker 0:  actual time=0.003..52.945 rows=41378.00 loops=1
+                                        Buffers: shared hit=2173 read=15732
+                                      Worker 1:  actual time=0.005..52.804 rows=39866.00 loops=1
+                                        Buffers: shared hit=2153 read=15563
+                                ->  Hash  (cost=716.00..716.00 rows=30000 width=31) (actual time=3.178..3.178 rows=30000.00 loops=3)
+                                      Output: c.clinic_id, c.clinic_name
+                                      Buckets: 32768  Batches: 1  Memory Usage: 2129kB
+                                      Buffers: shared hit=832 read=416
+                                      Worker 0:  actual time=2.958..2.958 rows=30000.00 loops=1
+                                        Buffers: shared hit=416
+                                      Worker 1:  actual time=3.277..3.277 rows=30000.00 loops=1
+                                        Buffers: shared hit=416
+                                      ->  Seq Scan on practo.clinics c  (cost=0.00..716.00 rows=30000 width=31) (actual time=0.021..1.387 rows=30000.00 loops=3)
+                                            Output: c.clinic_id, c.clinic_name
+                                            Buffers: shared hit=832 read=416
+                                            Worker 0:  actual time=0.020..1.291 rows=30000.00 loops=1
+                                              Buffers: shared hit=416
+                                            Worker 1:  actual time=0.022..1.271 rows=30000.00 loops=1
+                                              Buffers: shared hit=416
+Planning:
+  Buffers: shared hit=165 read=6
+Planning Time: 0.419 ms
+Execution Time: 86.664 ms
+=== R16 run 2 ===
+Limit  (cost=87718.71..87718.76 rows=20 width=71) (actual time=87.886..87.901 rows=20.00 loops=1)
+  Output: c.clinic_id, c.clinic_name, (count(*)), (sum(a.fee))
+  Buffers: shared hit=8139 read=46850, temp read=12 written=35
+  ->  Sort  (cost=87718.71..87793.71 rows=30000 width=71) (actual time=87.885..87.900 rows=20.00 loops=1)
+        Output: c.clinic_id, c.clinic_name, (count(*)), (sum(a.fee))
+        Sort Key: (sum(a.fee)) DESC
+        Sort Method: top-N heapsort  Memory: 28kB
+        Buffers: shared hit=8139 read=46850, temp read=12 written=35
+        ->  Finalize HashAggregate  (cost=86545.42..86920.42 rows=30000 width=71) (actual time=84.040..86.360 rows=18476.00 loops=1)
+              Output: c.clinic_id, c.clinic_name, count(*), sum(a.fee)
+              Group Key: c.clinic_id
+              Batches: 5  Memory Usage: 8241kB  Disk Usage: 216kB
+              Buffers: shared hit=8136 read=46850, temp read=12 written=35
+              ->  Gather  (cost=78250.42..85825.42 rows=72000 width=71) (actual time=68.563..72.729 rows=42600.00 loops=1)
+                    Output: c.clinic_id, c.clinic_name, (PARTIAL count(*)), (PARTIAL sum(a.fee))
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=8136 read=46850
+                    ->  Partial HashAggregate  (cost=77250.42..77625.42 rows=30000 width=71) (actual time=67.202..70.020 rows=14200.00 loops=3)
+                          Output: c.clinic_id, c.clinic_name, PARTIAL count(*), PARTIAL sum(a.fee)
+                          Group Key: c.clinic_id
+                          Batches: 1  Memory Usage: 6161kB
+                          Buffers: shared hit=8136 read=46850
+                          Worker 0:  actual time=66.430..69.531 rows=13883.00 loops=1
+                            Batches: 1  Memory Usage: 5905kB
+                            Buffers: shared hit=2630 read=15437
+                          Worker 1:  actual time=66.696..69.236 rows=13940.00 loops=1
+                            Batches: 1  Memory Usage: 5905kB
+                            Buffers: shared hit=2682 read=15570
+                          ->  Hash Join  (cost=1091.00..76850.90 rows=53269 width=36) (actual time=2.996..61.503 rows=32551.67 loops=3)
+                                Output: c.clinic_id, c.clinic_name, a.fee
+                                Inner Unique: true
+                                Hash Cond: (a.clinic_id = c.clinic_id)
+                                Buffers: shared hit=8136 read=46850
+                                Worker 0:  actual time=2.854..60.993 rows=30764.00 loops=1
+                                  Buffers: shared hit=2630 read=15437
+                                Worker 1:  actual time=3.040..61.208 rows=30969.00 loops=1
+                                  Buffers: shared hit=2682 read=15570
+                                ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..75620.06 rows=53269 width=9) (actual time=0.004..54.114 rows=42364.00 loops=3)
+                                      Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                      Filter: ((a.slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (a.slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND ((a.payment_status)::text = 'PAID'::text))
+                                      Rows Removed by Filter: 957636
+                                      Buffers: shared hit=6888 read=46850
+                                      Worker 0:  actual time=0.003..53.908 rows=39967.00 loops=1
+                                        Buffers: shared hit=2214 read=15437
+                                      Worker 1:  actual time=0.004..53.975 rows=40276.00 loops=1
+                                        Buffers: shared hit=2266 read=15570
+                                ->  Hash  (cost=716.00..716.00 rows=30000 width=31) (actual time=2.972..2.972 rows=30000.00 loops=3)
+                                      Output: c.clinic_id, c.clinic_name
+                                      Buckets: 32768  Batches: 1  Memory Usage: 2129kB
+                                      Buffers: shared hit=1248
+                                      Worker 0:  actual time=2.834..2.835 rows=30000.00 loops=1
+                                        Buffers: shared hit=416
+                                      Worker 1:  actual time=3.021..3.022 rows=30000.00 loops=1
+                                        Buffers: shared hit=416
+                                      ->  Seq Scan on practo.clinics c  (cost=0.00..716.00 rows=30000 width=31) (actual time=0.013..1.331 rows=30000.00 loops=3)
+                                            Output: c.clinic_id, c.clinic_name
+                                            Buffers: shared hit=1248
+                                            Worker 0:  actual time=0.019..1.225 rows=30000.00 loops=1
+                                              Buffers: shared hit=416
+                                            Worker 1:  actual time=0.019..1.274 rows=30000.00 loops=1
+                                              Buffers: shared hit=416
+Planning:
+  Buffers: shared hit=171
+Planning Time: 0.315 ms
+Execution Time: 88.353 ms
+=== R16 run 3 ===
+Limit  (cost=87718.71..87718.76 rows=20 width=71) (actual time=89.695..89.710 rows=20.00 loops=1)
+  Output: c.clinic_id, c.clinic_name, (count(*)), (sum(a.fee))
+  Buffers: shared hit=8421 read=46568, temp read=12 written=34
+  ->  Sort  (cost=87718.71..87793.71 rows=30000 width=71) (actual time=89.694..89.709 rows=20.00 loops=1)
+        Output: c.clinic_id, c.clinic_name, (count(*)), (sum(a.fee))
+        Sort Key: (sum(a.fee)) DESC
+        Sort Method: top-N heapsort  Memory: 28kB
+        Buffers: shared hit=8421 read=46568, temp read=12 written=34
+        ->  Finalize HashAggregate  (cost=86545.42..86920.42 rows=30000 width=71) (actual time=85.694..88.159 rows=18476.00 loops=1)
+              Output: c.clinic_id, c.clinic_name, count(*), sum(a.fee)
+              Group Key: c.clinic_id
+              Batches: 5  Memory Usage: 8241kB  Disk Usage: 216kB
+              Buffers: shared hit=8418 read=46568, temp read=12 written=34
+              ->  Gather  (cost=78250.42..85825.42 rows=72000 width=71) (actual time=69.742..74.014 rows=42513.00 loops=1)
+                    Output: c.clinic_id, c.clinic_name, (PARTIAL count(*)), (PARTIAL sum(a.fee))
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=8418 read=46568
+                    ->  Partial HashAggregate  (cost=77250.42..77625.42 rows=30000 width=71) (actual time=68.358..71.201 rows=14171.00 loops=3)
+                          Output: c.clinic_id, c.clinic_name, PARTIAL count(*), PARTIAL sum(a.fee)
+                          Group Key: c.clinic_id
+                          Batches: 1  Memory Usage: 6161kB
+                          Buffers: shared hit=8418 read=46568
+                          Worker 0:  actual time=67.613..70.635 rows=13594.00 loops=1
+                            Batches: 1  Memory Usage: 5905kB
+                            Buffers: shared hit=2656 read=15263
+                          Worker 1:  actual time=67.799..70.375 rows=14105.00 loops=1
+                            Batches: 1  Memory Usage: 5905kB
+                            Buffers: shared hit=2827 read=15463
+                          ->  Hash Join  (cost=1091.00..76850.90 rows=53269 width=36) (actual time=2.945..62.456 rows=32551.67 loops=3)
+                                Output: c.clinic_id, c.clinic_name, a.fee
+                                Inner Unique: true
+                                Hash Cond: (a.clinic_id = c.clinic_id)
+                                Buffers: shared hit=8418 read=46568
+                                Worker 0:  actual time=2.901..61.889 rows=29463.00 loops=1
+                                  Buffers: shared hit=2656 read=15263
+                                Worker 1:  actual time=2.852..62.021 rows=31857.00 loops=1
+                                  Buffers: shared hit=2827 read=15463
+                                ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..75620.06 rows=53269 width=9) (actual time=0.004..54.998 rows=42364.00 loops=3)
+                                      Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                      Filter: ((a.slot_start >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (a.slot_start < '2026-07-01 00:00:00+05:30'::timestamp with time zone) AND ((a.payment_status)::text = 'PAID'::text))
+                                      Rows Removed by Filter: 957636
+                                      Buffers: shared hit=7170 read=46568
+                                      Worker 0:  actual time=0.003..54.615 rows=38397.00 loops=1
+                                        Buffers: shared hit=2240 read=15263
+                                      Worker 1:  actual time=0.004..54.749 rows=41422.00 loops=1
+                                        Buffers: shared hit=2411 read=15463
+                                ->  Hash  (cost=716.00..716.00 rows=30000 width=31) (actual time=2.924..2.924 rows=30000.00 loops=3)
+                                      Output: c.clinic_id, c.clinic_name
+                                      Buckets: 32768  Batches: 1  Memory Usage: 2129kB
+                                      Buffers: shared hit=1248
+                                      Worker 0:  actual time=2.883..2.883 rows=30000.00 loops=1
+                                        Buffers: shared hit=416
+                                      Worker 1:  actual time=2.830..2.830 rows=30000.00 loops=1
+                                        Buffers: shared hit=416
+                                      ->  Seq Scan on practo.clinics c  (cost=0.00..716.00 rows=30000 width=31) (actual time=0.013..1.315 rows=30000.00 loops=3)
+                                            Output: c.clinic_id, c.clinic_name
+                                            Buffers: shared hit=1248
+                                            Worker 0:  actual time=0.018..1.216 rows=30000.00 loops=1
+                                              Buffers: shared hit=416
+                                            Worker 1:  actual time=0.019..1.247 rows=30000.00 loops=1
+                                              Buffers: shared hit=416
+Planning:
+  Buffers: shared hit=171
+Planning Time: 0.311 ms
+Execution Time: 90.155 ms

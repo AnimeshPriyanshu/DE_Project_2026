@@ -1,0 +1,138 @@
+=== R03 run 1 ===
+Merge Anti Join  (cost=73660.36..73670.67 rows=1994 width=8) (actual time=56.975..57.606 rows=11.00 loops=1)
+  Output: slot.slot
+  Merge Cond: (slot.slot = a.slot_start)
+  Buffers: shared hit=3801 read=49944
+  ->  Sort  (cost=159.90..164.90 rows=2000 width=8) (actual time=0.023..0.023 rows=12.00 loops=1)
+        Output: slot.slot
+        Sort Key: slot.slot
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=7
+        ->  Nested Loop  (cost=0.45..50.24 rows=2000 width=8) (actual time=0.018..0.020 rows=12.00 loops=1)
+              Output: slot.slot
+              Buffers: shared hit=7
+              ->  Index Scan using doctor_schedules_pkey on practo.doctor_schedules sc  (cost=0.42..10.21 rows=2 width=18) (actual time=0.010..0.011 rows=1.00 loops=1)
+                    Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+                    Index Cond: ((sc.doctor_id = 217) AND (sc.weekday = 5))
+                    Filter: (sc.clinic_id IS NOT NULL)
+                    Rows Removed by Filter: 1
+                    Index Searches: 1
+                    Buffers: shared hit=7
+              ->  Function Scan on pg_catalog.generate_series slot  (cost=0.02..10.03 rows=1000 width=8) (actual time=0.007..0.007 rows=12.00 loops=1)
+                    Output: slot.slot
+                    Function Call: generate_series((('2026-07-03'::date + sc.start_time))::timestamp with time zone, ((('2026-07-03'::date + sc.end_time))::timestamp with time zone - ((sc.slot_minutes)::double precision * '00:01:00'::interval)), ((sc.slot_minutes)::double precision * '00:01:00'::interval))
+  ->  Sort  (cost=73500.46..73500.59 rows=50 width=8) (actual time=56.943..57.575 rows=167.00 loops=1)
+        Output: a.slot_start
+        Sort Key: a.slot_start
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=3794 read=49944
+        ->  Gather  (cost=1000.00..73499.05 rows=50 width=8) (actual time=1.951..57.557 rows=167.00 loops=1)
+              Output: a.slot_start
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=3794 read=49944
+              ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..72494.05 rows=21 width=8) (actual time=2.110..55.480 rows=55.67 loops=3)
+                    Output: a.slot_start
+                    Filter: (((a.status)::text <> 'CANCELLED'::text) AND (a.doctor_id = 217))
+                    Rows Removed by Filter: 999944
+                    Buffers: shared hit=3794 read=49944
+                    Worker 0:  actual time=3.255..54.825 rows=52.00 loops=1
+                      Buffers: shared hit=1172 read=15799
+                    Worker 1:  actual time=1.191..54.767 rows=58.00 loops=1
+                      Buffers: shared hit=1290 read=16760
+Planning:
+  Buffers: shared hit=308
+Planning Time: 0.376 ms
+Execution Time: 57.641 ms
+=== R03 run 2 ===
+Merge Anti Join  (cost=73660.36..73670.67 rows=1994 width=8) (actual time=58.568..59.343 rows=11.00 loops=1)
+  Output: slot.slot
+  Merge Cond: (slot.slot = a.slot_start)
+  Buffers: shared hit=4083 read=49662
+  ->  Sort  (cost=159.90..164.90 rows=2000 width=8) (actual time=0.019..0.020 rows=12.00 loops=1)
+        Output: slot.slot
+        Sort Key: slot.slot
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=7
+        ->  Nested Loop  (cost=0.45..50.24 rows=2000 width=8) (actual time=0.016..0.017 rows=12.00 loops=1)
+              Output: slot.slot
+              Buffers: shared hit=7
+              ->  Index Scan using doctor_schedules_pkey on practo.doctor_schedules sc  (cost=0.42..10.21 rows=2 width=18) (actual time=0.009..0.010 rows=1.00 loops=1)
+                    Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+                    Index Cond: ((sc.doctor_id = 217) AND (sc.weekday = 5))
+                    Filter: (sc.clinic_id IS NOT NULL)
+                    Rows Removed by Filter: 1
+                    Index Searches: 1
+                    Buffers: shared hit=7
+              ->  Function Scan on pg_catalog.generate_series slot  (cost=0.02..10.03 rows=1000 width=8) (actual time=0.006..0.006 rows=12.00 loops=1)
+                    Output: slot.slot
+                    Function Call: generate_series((('2026-07-03'::date + sc.start_time))::timestamp with time zone, ((('2026-07-03'::date + sc.end_time))::timestamp with time zone - ((sc.slot_minutes)::double precision * '00:01:00'::interval)), ((sc.slot_minutes)::double precision * '00:01:00'::interval))
+  ->  Sort  (cost=73500.46..73500.59 rows=50 width=8) (actual time=58.538..59.315 rows=167.00 loops=1)
+        Output: a.slot_start
+        Sort Key: a.slot_start
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=4076 read=49662
+        ->  Gather  (cost=1000.00..73499.05 rows=50 width=8) (actual time=1.995..59.297 rows=167.00 loops=1)
+              Output: a.slot_start
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=4076 read=49662
+              ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..72494.05 rows=21 width=8) (actual time=1.296..57.219 rows=55.67 loops=3)
+                    Output: a.slot_start
+                    Filter: (((a.status)::text <> 'CANCELLED'::text) AND (a.doctor_id = 217))
+                    Rows Removed by Filter: 999944
+                    Buffers: shared hit=4076 read=49662
+                    Worker 0:  actual time=0.635..56.581 rows=52.00 loops=1
+                      Buffers: shared hit=1435 read=16803
+                    Worker 1:  actual time=1.315..56.710 rows=54.00 loops=1
+                      Buffers: shared hit=1230 read=15111
+Planning:
+  Buffers: shared hit=308
+Planning Time: 0.294 ms
+Execution Time: 59.374 ms
+=== R03 run 3 ===
+Merge Anti Join  (cost=73660.36..73670.67 rows=1994 width=8) (actual time=58.649..59.429 rows=11.00 loops=1)
+  Output: slot.slot
+  Merge Cond: (slot.slot = a.slot_start)
+  Buffers: shared hit=4365 read=49380
+  ->  Sort  (cost=159.90..164.90 rows=2000 width=8) (actual time=0.021..0.021 rows=12.00 loops=1)
+        Output: slot.slot
+        Sort Key: slot.slot
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=7
+        ->  Nested Loop  (cost=0.45..50.24 rows=2000 width=8) (actual time=0.017..0.018 rows=12.00 loops=1)
+              Output: slot.slot
+              Buffers: shared hit=7
+              ->  Index Scan using doctor_schedules_pkey on practo.doctor_schedules sc  (cost=0.42..10.21 rows=2 width=18) (actual time=0.010..0.010 rows=1.00 loops=1)
+                    Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+                    Index Cond: ((sc.doctor_id = 217) AND (sc.weekday = 5))
+                    Filter: (sc.clinic_id IS NOT NULL)
+                    Rows Removed by Filter: 1
+                    Index Searches: 1
+                    Buffers: shared hit=7
+              ->  Function Scan on pg_catalog.generate_series slot  (cost=0.02..10.03 rows=1000 width=8) (actual time=0.006..0.007 rows=12.00 loops=1)
+                    Output: slot.slot
+                    Function Call: generate_series((('2026-07-03'::date + sc.start_time))::timestamp with time zone, ((('2026-07-03'::date + sc.end_time))::timestamp with time zone - ((sc.slot_minutes)::double precision * '00:01:00'::interval)), ((sc.slot_minutes)::double precision * '00:01:00'::interval))
+  ->  Sort  (cost=73500.46..73500.59 rows=50 width=8) (actual time=58.618..59.399 rows=167.00 loops=1)
+        Output: a.slot_start
+        Sort Key: a.slot_start
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=4358 read=49380
+        ->  Gather  (cost=1000.00..73499.05 rows=50 width=8) (actual time=1.883..59.382 rows=167.00 loops=1)
+              Output: a.slot_start
+              Workers Planned: 2
+              Workers Launched: 2
+              Buffers: shared hit=4358 read=49380
+              ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..72494.05 rows=21 width=8) (actual time=1.234..57.265 rows=55.67 loops=3)
+                    Output: a.slot_start
+                    Filter: (((a.status)::text <> 'CANCELLED'::text) AND (a.doctor_id = 217))
+                    Rows Removed by Filter: 999944
+                    Buffers: shared hit=4358 read=49380
+                    Worker 0:  actual time=1.135..56.605 rows=54.00 loops=1
+                      Buffers: shared hit=1367 read=16112
+                    Worker 1:  actual time=0.751..56.703 rows=54.00 loops=1
+                      Buffers: shared hit=1371 read=16161
+Planning:
+  Buffers: shared hit=308
+Planning Time: 0.329 ms
+Execution Time: 59.462 ms

@@ -1,0 +1,4 @@
+psql:/tmp/r13_test.sql:6: ERROR:  canceling statement due to statement timeout
+real 240.04
+user 0.00
+sys 0.00

@@ -1,0 +1,120 @@
+=== R04 run 1 ===
+Sort  (cost=73510.77..73510.78 rows=1 width=64) (actual time=49.104..49.908 rows=0.00 loops=1)
+  Output: a.appointment_id, d.full_name, a.consult_type, a.slot_start, c.clinic_name
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=4643 read=49098
+  ->  Nested Loop Left Join  (cost=1000.58..73510.76 rows=1 width=64) (actual time=49.097..49.900 rows=0.00 loops=1)
+        Output: a.appointment_id, d.full_name, a.consult_type, a.slot_start, c.clinic_name
+        Inner Unique: true
+        Buffers: shared hit=4640 read=49098
+        ->  Nested Loop  (cost=1000.29..73502.46 rows=1 width=41) (actual time=49.096..49.900 rows=0.00 loops=1)
+              Output: a.appointment_id, a.consult_type, a.slot_start, a.clinic_id, d.full_name
+              Inner Unique: true
+              Buffers: shared hit=4640 read=49098
+              ->  Gather  (cost=1000.00..73494.15 rows=1 width=29) (actual time=49.096..49.899 rows=0.00 loops=1)
+                    Output: a.appointment_id, a.consult_type, a.slot_start, a.doctor_id, a.clinic_id
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=4640 read=49098
+                    ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..72494.05 rows=1 width=29) (actual time=47.744..47.744 rows=0.00 loops=3)
+                          Output: a.appointment_id, a.consult_type, a.slot_start, a.doctor_id, a.clinic_id
+                          Filter: ((a.patient_id = 90) AND ((a.status)::text = 'BOOKED'::text))
+                          Rows Removed by Filter: 1000000
+                          Buffers: shared hit=4640 read=49098
+                          Worker 0:  actual time=47.013..47.014 rows=0.00 loops=1
+                            Buffers: shared hit=1453 read=15320
+                          Worker 1:  actual time=47.239..47.239 rows=0.00 loops=1
+                            Buffers: shared hit=1452 read=15318
+              ->  Index Scan using doctors_pkey on practo.doctors d  (cost=0.29..8.31 rows=1 width=20) (never executed)
+                    Output: d.doctor_id, d.full_name, d.registration_no, d.gender, d.experience_years, d.consultation_fee, d.video_fee, d.languages, d.is_verified, d.joined_on
+                    Index Cond: (d.doctor_id = a.doctor_id)
+                    Index Searches: 0
+        ->  Index Scan using clinics_pkey on practo.clinics c  (cost=0.29..8.30 rows=1 width=31) (never executed)
+              Output: c.clinic_id, c.clinic_name, c.city_id, c.locality, c.latitude, c.longitude, c.phone
+              Index Cond: (c.clinic_id = a.clinic_id)
+              Index Searches: 0
+Planning:
+  Buffers: shared hit=274
+Planning Time: 0.458 ms
+Execution Time: 49.936 ms
+=== R04 run 2 ===
+Sort  (cost=73510.77..73510.78 rows=1 width=64) (actual time=52.915..53.829 rows=0.00 loops=1)
+  Output: a.appointment_id, d.full_name, a.consult_type, a.slot_start, c.clinic_name
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=4925 read=48816
+  ->  Nested Loop Left Join  (cost=1000.58..73510.76 rows=1 width=64) (actual time=52.909..53.823 rows=0.00 loops=1)
+        Output: a.appointment_id, d.full_name, a.consult_type, a.slot_start, c.clinic_name
+        Inner Unique: true
+        Buffers: shared hit=4922 read=48816
+        ->  Nested Loop  (cost=1000.29..73502.46 rows=1 width=41) (actual time=52.909..53.822 rows=0.00 loops=1)
+              Output: a.appointment_id, a.consult_type, a.slot_start, a.clinic_id, d.full_name
+              Inner Unique: true
+              Buffers: shared hit=4922 read=48816
+              ->  Gather  (cost=1000.00..73494.15 rows=1 width=29) (actual time=52.909..53.822 rows=0.00 loops=1)
+                    Output: a.appointment_id, a.consult_type, a.slot_start, a.doctor_id, a.clinic_id
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=4922 read=48816
+                    ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..72494.05 rows=1 width=29) (actual time=51.575..51.575 rows=0.00 loops=3)
+                          Output: a.appointment_id, a.consult_type, a.slot_start, a.doctor_id, a.clinic_id
+                          Filter: ((a.patient_id = 90) AND ((a.status)::text = 'BOOKED'::text))
+                          Rows Removed by Filter: 1000000
+                          Buffers: shared hit=4922 read=48816
+                          Worker 0:  actual time=50.877..50.878 rows=0.00 loops=1
+                            Buffers: shared hit=1566 read=16617
+                          Worker 1:  actual time=51.043..51.043 rows=0.00 loops=1
+                            Buffers: shared hit=1481 read=13529
+              ->  Index Scan using doctors_pkey on practo.doctors d  (cost=0.29..8.31 rows=1 width=20) (never executed)
+                    Output: d.doctor_id, d.full_name, d.registration_no, d.gender, d.experience_years, d.consultation_fee, d.video_fee, d.languages, d.is_verified, d.joined_on
+                    Index Cond: (d.doctor_id = a.doctor_id)
+                    Index Searches: 0
+        ->  Index Scan using clinics_pkey on practo.clinics c  (cost=0.29..8.30 rows=1 width=31) (never executed)
+              Output: c.clinic_id, c.clinic_name, c.city_id, c.locality, c.latitude, c.longitude, c.phone
+              Index Cond: (c.clinic_id = a.clinic_id)
+              Index Searches: 0
+Planning:
+  Buffers: shared hit=274
+Planning Time: 0.384 ms
+Execution Time: 53.855 ms
+=== R04 run 3 ===
+Sort  (cost=73510.77..73510.78 rows=1 width=64) (actual time=50.081..51.076 rows=0.00 loops=1)
+  Output: a.appointment_id, d.full_name, a.consult_type, a.slot_start, c.clinic_name
+  Sort Key: a.slot_start
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=5207 read=48534
+  ->  Nested Loop Left Join  (cost=1000.58..73510.76 rows=1 width=64) (actual time=50.075..51.070 rows=0.00 loops=1)
+        Output: a.appointment_id, d.full_name, a.consult_type, a.slot_start, c.clinic_name
+        Inner Unique: true
+        Buffers: shared hit=5204 read=48534
+        ->  Nested Loop  (cost=1000.29..73502.46 rows=1 width=41) (actual time=50.075..51.070 rows=0.00 loops=1)
+              Output: a.appointment_id, a.consult_type, a.slot_start, a.clinic_id, d.full_name
+              Inner Unique: true
+              Buffers: shared hit=5204 read=48534
+              ->  Gather  (cost=1000.00..73494.15 rows=1 width=29) (actual time=50.074..51.069 rows=0.00 loops=1)
+                    Output: a.appointment_id, a.consult_type, a.slot_start, a.doctor_id, a.clinic_id
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=5204 read=48534
+                    ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..72494.05 rows=1 width=29) (actual time=48.757..48.757 rows=0.00 loops=3)
+                          Output: a.appointment_id, a.consult_type, a.slot_start, a.doctor_id, a.clinic_id
+                          Filter: ((a.patient_id = 90) AND ((a.status)::text = 'BOOKED'::text))
+                          Rows Removed by Filter: 1000000
+                          Buffers: shared hit=5204 read=48534
+                          Worker 0:  actual time=47.964..47.964 rows=0.00 loops=1
+                            Buffers: shared hit=1773 read=16523
+                          Worker 1:  actual time=48.334..48.334 rows=0.00 loops=1
+                            Buffers: shared hit=1752 read=16117
+              ->  Index Scan using doctors_pkey on practo.doctors d  (cost=0.29..8.31 rows=1 width=20) (never executed)
+                    Output: d.doctor_id, d.full_name, d.registration_no, d.gender, d.experience_years, d.consultation_fee, d.video_fee, d.languages, d.is_verified, d.joined_on
+                    Index Cond: (d.doctor_id = a.doctor_id)
+                    Index Searches: 0
+        ->  Index Scan using clinics_pkey on practo.clinics c  (cost=0.29..8.30 rows=1 width=31) (never executed)
+              Output: c.clinic_id, c.clinic_name, c.city_id, c.locality, c.latitude, c.longitude, c.phone
+              Index Cond: (c.clinic_id = a.clinic_id)
+              Index Searches: 0
+Planning:
+  Buffers: shared hit=274
+Planning Time: 0.387 ms
+Execution Time: 51.101 ms

@@ -1,0 +1,10 @@
+  Buffers: shared hit=13828 read=51137, temp read=7370 written=7380
+        Buffers: shared hit=13828 read=51137, temp read=7370 written=7380
+              Buffers: shared hit=13825 read=51137, temp read=5497 written=5497
+                    Buffers: shared hit=12978 read=40760
+                    Buffers: shared hit=847 read=10377, temp written=2702
+                          Buffers: shared hit=847 read=10377
+  Buffers: shared hit=250
+Planning Time: 0.412 ms
+Execution Time: 996.392 ms
+real 1.02

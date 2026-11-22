@@ -1,0 +1,57 @@
+=== R02 run 1 ===
+Nested Loop Left Join  (cost=0.71..117.47 rows=11 width=52) (actual time=0.014..0.019 rows=9.00 loops=1)
+  Output: sc.weekday, sc.start_time, sc.end_time, sc.slot_minutes, COALESCE(c.clinic_name, 'Video consultation'::character varying)
+  Inner Unique: true
+  Buffers: shared hit=23
+  ->  Index Scan using doctor_schedules_pkey on practo.doctor_schedules sc  (cost=0.42..26.12 rows=11 width=24) (actual time=0.007..0.009 rows=9.00 loops=1)
+        Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+        Index Cond: (sc.doctor_id = 217)
+        Index Searches: 1
+        Buffers: shared hit=5
+  ->  Index Scan using clinics_pkey on practo.clinics c  (cost=0.29..8.30 rows=1 width=31) (actual time=0.001..0.001 rows=0.67 loops=9)
+        Output: c.clinic_id, c.clinic_name, c.city_id, c.locality, c.latitude, c.longitude, c.phone
+        Index Cond: (c.clinic_id = sc.clinic_id)
+        Index Searches: 6
+        Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=231 read=1
+Planning Time: 0.524 ms
+Execution Time: 0.040 ms
+=== R02 run 2 ===
+Nested Loop Left Join  (cost=0.71..117.47 rows=11 width=52) (actual time=0.013..0.018 rows=9.00 loops=1)
+  Output: sc.weekday, sc.start_time, sc.end_time, sc.slot_minutes, COALESCE(c.clinic_name, 'Video consultation'::character varying)
+  Inner Unique: true
+  Buffers: shared hit=23
+  ->  Index Scan using doctor_schedules_pkey on practo.doctor_schedules sc  (cost=0.42..26.12 rows=11 width=24) (actual time=0.007..0.008 rows=9.00 loops=1)
+        Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+        Index Cond: (sc.doctor_id = 217)
+        Index Searches: 1
+        Buffers: shared hit=5
+  ->  Index Scan using clinics_pkey on practo.clinics c  (cost=0.29..8.30 rows=1 width=31) (actual time=0.001..0.001 rows=0.67 loops=9)
+        Output: c.clinic_id, c.clinic_name, c.city_id, c.locality, c.latitude, c.longitude, c.phone
+        Index Cond: (c.clinic_id = sc.clinic_id)
+        Index Searches: 6
+        Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=232
+Planning Time: 0.298 ms
+Execution Time: 0.039 ms
+=== R02 run 3 ===
+Nested Loop Left Join  (cost=0.71..117.47 rows=11 width=52) (actual time=0.014..0.019 rows=9.00 loops=1)
+  Output: sc.weekday, sc.start_time, sc.end_time, sc.slot_minutes, COALESCE(c.clinic_name, 'Video consultation'::character varying)
+  Inner Unique: true
+  Buffers: shared hit=23
+  ->  Index Scan using doctor_schedules_pkey on practo.doctor_schedules sc  (cost=0.42..26.12 rows=11 width=24) (actual time=0.007..0.009 rows=9.00 loops=1)
+        Output: sc.doctor_id, sc.weekday, sc.start_time, sc.end_time, sc.clinic_id, sc.slot_minutes
+        Index Cond: (sc.doctor_id = 217)
+        Index Searches: 1
+        Buffers: shared hit=5
+  ->  Index Scan using clinics_pkey on practo.clinics c  (cost=0.29..8.30 rows=1 width=31) (actual time=0.001..0.001 rows=0.67 loops=9)
+        Output: c.clinic_id, c.clinic_name, c.city_id, c.locality, c.latitude, c.longitude, c.phone
+        Index Cond: (c.clinic_id = sc.clinic_id)
+        Index Searches: 6
+        Buffers: shared hit=18
+Planning:
+  Buffers: shared hit=232
+Planning Time: 0.309 ms
+Execution Time: 0.039 ms

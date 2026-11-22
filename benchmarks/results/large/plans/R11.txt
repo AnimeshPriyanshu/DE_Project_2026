@@ -1,0 +1,222 @@
+=== R11 run 1 ===
+Gather Merge  (cost=132538.05..133194.11 rows=5633 width=16) (actual time=126.851..128.152 rows=7578.00 loops=1)
+  Output: p.prescription_id, a.patient_id, a.doctor_id, p.follow_up_date
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=34321 read=67227
+  ->  Sort  (cost=131538.03..131543.89 rows=2347 width=16) (actual time=124.776..124.825 rows=2526.00 loops=3)
+        Output: p.prescription_id, a.patient_id, a.doctor_id, p.follow_up_date
+        Sort Key: p.follow_up_date
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=34321 read=67227
+        Worker 0:  actual time=123.851..123.852 rows=0.00 loops=1
+          Sort Method: quicksort  Memory: 25kB
+          Buffers: shared hit=11119 read=22505
+        Worker 1:  actual time=124.520..124.665 rows=7578.00 loops=1
+          Sort Method: quicksort  Memory: 429kB
+          Buffers: shared hit=11717 read=21671
+        ->  Parallel Hash Right Anti Join  (cost=53630.55..131406.63 rows=2347 width=16) (actual time=124.546..124.651 rows=2526.00 loops=3)
+              Output: p.prescription_id, a.patient_id, a.doctor_id, p.follow_up_date
+              Hash Cond: ((f.patient_id = a.patient_id) AND (f.doctor_id = a.doctor_id))
+              Join Filter: (f.slot_start > a.slot_start)
+              Rows Removed by Join Filter: 2527
+              Buffers: shared hit=34305 read=67227
+              Worker 0:  actual time=123.840..123.840 rows=0.00 loops=1
+                Buffers: shared hit=11111 read=22505
+              Worker 1:  actual time=123.846..124.159 rows=7578.00 loops=1
+                Buffers: shared hit=11709 read=21671
+              ->  Parallel Seq Scan on practo.appointments f  (cost=0.00..69368.04 rows=1121070 width=16) (actual time=0.004..58.016 rows=901227.33 loops=3)
+                    Output: f.appointment_id, f.patient_id, f.doctor_id, f.clinic_id, f.consult_type, f.booked_at, f.slot_start, f.slot_end, f.reason, f.status, f.checked_in_at, f.consult_started_at, f.consult_ended_at, f.fee, f.payment_status
+                    Filter: ((f.status)::text <> 'CANCELLED'::text)
+                    Rows Removed by Filter: 98773
+                    Buffers: shared hit=3220 read=50518
+                    Worker 0:  actual time=0.004..58.345 rows=929109.00 loops=1
+                      Buffers: shared hit=1115 read=17346
+                    Worker 1:  actual time=0.006..58.058 rows=869415.00 loops=1
+                      Buffers: shared hit=1067 read=16212
+              ->  Parallel Hash  (cost=53577.74..53577.74 rows=3521 width=24) (actual time=28.102..28.102 rows=2526.00 loops=3)
+                    Output: p.prescription_id, p.follow_up_date, a.patient_id, a.doctor_id, a.slot_start
+                    Buckets: 16384  Batches: 1  Memory Usage: 608kB
+                    Buffers: shared hit=31085 read=16709
+                    Worker 0:  actual time=27.374..27.375 rows=2413.00 loops=1
+                      Buffers: shared hit=9996 read=5159
+                    Worker 1:  actual time=27.369..27.369 rows=2614.00 loops=1
+                      Buffers: shared hit=10642 read=5459
+                    ->  Nested Loop  (cost=0.43..53577.74 rows=3521 width=24) (actual time=20.522..27.580 rows=2526.00 loops=3)
+                          Output: p.prescription_id, p.follow_up_date, a.patient_id, a.doctor_id, a.slot_start
+                          Inner Unique: true
+                          Buffers: shared hit=31085 read=16709
+                          Worker 0:  actual time=19.855..26.599 rows=2413.00 loops=1
+                            Buffers: shared hit=9996 read=5159
+                          Worker 1:  actual time=19.791..27.100 rows=2614.00 loops=1
+                            Buffers: shared hit=10642 read=5459
+                          ->  Parallel Seq Scan on practo.prescriptions p  (cost=0.00..29632.70 rows=3521 width=12) (actual time=20.472..22.478 rows=2526.00 loops=3)
+                                Output: p.prescription_id, p.appointment_id, p.diagnosis, p.notes, p.follow_up_date, p.issued_at
+                                Filter: ((p.follow_up_date >= '2026-07-01'::date) AND (p.follow_up_date <= '2026-07-07'::date))
+                                Rows Removed by Filter: 645618
+                                Buffers: shared hit=4384 read=13096
+                                Worker 0:  actual time=19.802..21.684 rows=2413.00 loops=1
+                                  Buffers: shared hit=1474 read=4028
+                                Worker 1:  actual time=19.713..21.747 rows=2614.00 loops=1
+                                  Buffers: shared hit=1463 read=4181
+                          ->  Index Scan using appointments_pkey on practo.appointments a  (cost=0.43..6.80 rows=1 width=20) (actual time=0.002..0.002 rows=1.00 loops=7578)
+                                Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                Index Cond: (a.appointment_id = p.appointment_id)
+                                Index Searches: 7578
+                                Buffers: shared hit=26701 read=3613
+                                Worker 0:  actual time=0.002..0.002 rows=1.00 loops=2413
+                                  Buffers: shared hit=8522 read=1131
+                                Worker 1:  actual time=0.002..0.002 rows=1.00 loops=2614
+                                  Buffers: shared hit=9179 read=1278
+Planning:
+  Buffers: shared hit=282 read=45
+Planning Time: 0.689 ms
+Execution Time: 128.329 ms
+=== R11 run 2 ===
+Gather Merge  (cost=132538.05..133194.11 rows=5633 width=16) (actual time=130.049..131.335 rows=7578.00 loops=1)
+  Output: p.prescription_id, a.patient_id, a.doctor_id, p.follow_up_date
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=37982 read=63566
+  ->  Sort  (cost=131538.03..131543.89 rows=2347 width=16) (actual time=128.262..128.311 rows=2526.00 loops=3)
+        Output: p.prescription_id, a.patient_id, a.doctor_id, p.follow_up_date
+        Sort Key: p.follow_up_date
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=37982 read=63566
+        Worker 0:  actual time=127.367..127.369 rows=0.00 loops=1
+          Sort Method: quicksort  Memory: 25kB
+          Buffers: shared hit=12848 read=19996
+        Worker 1:  actual time=128.104..128.250 rows=7578.00 loops=1
+          Sort Method: quicksort  Memory: 429kB
+          Buffers: shared hit=12474 read=20840
+        ->  Parallel Hash Right Anti Join  (cost=53630.55..131406.63 rows=2347 width=16) (actual time=128.050..128.148 rows=2526.00 loops=3)
+              Output: p.prescription_id, a.patient_id, a.doctor_id, p.follow_up_date
+              Hash Cond: ((f.patient_id = a.patient_id) AND (f.doctor_id = a.doctor_id))
+              Join Filter: (f.slot_start > a.slot_start)
+              Rows Removed by Join Filter: 2527
+              Buffers: shared hit=37966 read=63566
+              Worker 0:  actual time=127.358..127.359 rows=0.00 loops=1
+                Buffers: shared hit=12840 read=19996
+              Worker 1:  actual time=127.482..127.774 rows=7578.00 loops=1
+                Buffers: shared hit=12466 read=20840
+              ->  Parallel Seq Scan on practo.appointments f  (cost=0.00..69368.04 rows=1121070 width=16) (actual time=0.019..60.795 rows=901227.33 loops=3)
+                    Output: f.appointment_id, f.patient_id, f.doctor_id, f.clinic_id, f.consult_type, f.booked_at, f.slot_start, f.slot_end, f.reason, f.status, f.checked_in_at, f.consult_started_at, f.consult_ended_at, f.fee, f.payment_status
+                    Filter: ((f.status)::text <> 'CANCELLED'::text)
+                    Rows Removed by Filter: 98773
+                    Buffers: shared hit=3503 read=50235
+                    Worker 0:  actual time=0.051..60.598 rows=850104.00 loops=1
+                      Buffers: shared hit=1180 read=15716
+                    Worker 1:  actual time=0.002..60.948 rows=888188.00 loops=1
+                      Buffers: shared hit=1171 read=16492
+              ->  Parallel Hash  (cost=53577.74..53577.74 rows=3521 width=24) (actual time=25.583..25.583 rows=2526.00 loops=3)
+                    Output: p.prescription_id, p.follow_up_date, a.patient_id, a.doctor_id, a.slot_start
+                    Buckets: 16384  Batches: 1  Memory Usage: 608kB
+                    Buffers: shared hit=34463 read=13331
+                    Worker 0:  actual time=24.897..24.897 rows=2562.00 loops=1
+                      Buffers: shared hit=11660 read=4280
+                    Worker 1:  actual time=25.017..25.017 rows=2488.00 loops=1
+                      Buffers: shared hit=11295 read=4348
+                    ->  Nested Loop  (cost=0.43..53577.74 rows=3521 width=24) (actual time=20.434..25.347 rows=2526.00 loops=3)
+                          Output: p.prescription_id, p.follow_up_date, a.patient_id, a.doctor_id, a.slot_start
+                          Inner Unique: true
+                          Buffers: shared hit=34463 read=13331
+                          Worker 0:  actual time=19.830..24.694 rows=2562.00 loops=1
+                            Buffers: shared hit=11660 read=4280
+                          Worker 1:  actual time=19.825..24.742 rows=2488.00 loops=1
+                            Buffers: shared hit=11295 read=4348
+                          ->  Parallel Seq Scan on practo.prescriptions p  (cost=0.00..29632.70 rows=3521 width=12) (actual time=20.423..22.315 rows=2526.00 loops=3)
+                                Output: p.prescription_id, p.appointment_id, p.diagnosis, p.notes, p.follow_up_date, p.issued_at
+                                Filter: ((p.follow_up_date >= '2026-07-01'::date) AND (p.follow_up_date <= '2026-07-07'::date))
+                                Rows Removed by Filter: 645618
+                                Buffers: shared hit=4149 read=13331
+                                Worker 0:  actual time=19.820..21.635 rows=2562.00 loops=1
+                                  Buffers: shared hit=1411 read=4280
+                                Worker 1:  actual time=19.810..21.734 rows=2488.00 loops=1
+                                  Buffers: shared hit=1342 read=4348
+                          ->  Index Scan using appointments_pkey on practo.appointments a  (cost=0.43..6.80 rows=1 width=20) (actual time=0.001..0.001 rows=1.00 loops=7578)
+                                Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                Index Cond: (a.appointment_id = p.appointment_id)
+                                Index Searches: 7578
+                                Buffers: shared hit=30314
+                                Worker 0:  actual time=0.001..0.001 rows=1.00 loops=2562
+                                  Buffers: shared hit=10249
+                                Worker 1:  actual time=0.001..0.001 rows=1.00 loops=2488
+                                  Buffers: shared hit=9953
+Planning:
+  Buffers: shared hit=327
+Planning Time: 0.419 ms
+Execution Time: 131.511 ms
+=== R11 run 3 ===
+Gather Merge  (cost=132538.05..133194.11 rows=5633 width=16) (actual time=126.152..126.610 rows=7578.00 loops=1)
+  Output: p.prescription_id, a.patient_id, a.doctor_id, p.follow_up_date
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=38546 read=63002
+  ->  Sort  (cost=131538.03..131543.89 rows=2347 width=16) (actual time=124.179..124.227 rows=2526.00 loops=3)
+        Output: p.prescription_id, a.patient_id, a.doctor_id, p.follow_up_date
+        Sort Key: p.follow_up_date
+        Sort Method: quicksort  Memory: 429kB
+        Buffers: shared hit=38546 read=63002
+        Worker 0:  actual time=123.144..123.145 rows=0.00 loops=1
+          Sort Method: quicksort  Memory: 25kB
+          Buffers: shared hit=12827 read=21565
+        Worker 1:  actual time=123.345..123.346 rows=0.00 loops=1
+          Sort Method: quicksort  Memory: 25kB
+          Buffers: shared hit=12755 read=20333
+        ->  Parallel Hash Right Anti Join  (cost=53630.55..131406.63 rows=2347 width=16) (actual time=123.917..124.032 rows=2526.00 loops=3)
+              Output: p.prescription_id, a.patient_id, a.doctor_id, p.follow_up_date
+              Hash Cond: ((f.patient_id = a.patient_id) AND (f.doctor_id = a.doctor_id))
+              Join Filter: (f.slot_start > a.slot_start)
+              Rows Removed by Join Filter: 2527
+              Buffers: shared hit=38530 read=63002
+              Worker 0:  actual time=123.135..123.136 rows=0.00 loops=1
+                Buffers: shared hit=12819 read=21565
+              Worker 1:  actual time=123.334..123.335 rows=0.00 loops=1
+                Buffers: shared hit=12747 read=20333
+              ->  Parallel Seq Scan on practo.appointments f  (cost=0.00..69368.04 rows=1121070 width=16) (actual time=0.020..57.860 rows=901227.33 loops=3)
+                    Output: f.appointment_id, f.patient_id, f.doctor_id, f.clinic_id, f.consult_type, f.booked_at, f.slot_start, f.slot_end, f.reason, f.status, f.checked_in_at, f.consult_started_at, f.consult_ended_at, f.fee, f.payment_status
+                    Filter: ((f.status)::text <> 'CANCELLED'::text)
+                    Rows Removed by Filter: 98773
+                    Buffers: shared hit=3785 read=49953
+                    Worker 0:  actual time=0.054..58.174 rows=941906.00 loops=1
+                      Buffers: shared hit=1289 read=17418
+                    Worker 1:  actual time=0.002..57.744 rows=881381.00 loops=1
+                      Buffers: shared hit=1247 read=16275
+              ->  Parallel Hash  (cost=53577.74..53577.74 rows=3521 width=24) (actual time=26.007..26.008 rows=2526.00 loops=3)
+                    Output: p.prescription_id, p.follow_up_date, a.patient_id, a.doctor_id, a.slot_start
+                    Buckets: 16384  Batches: 1  Memory Usage: 608kB
+                    Buffers: shared hit=34745 read=13049
+                    Worker 0:  actual time=25.228..25.229 rows=2509.00 loops=1
+                      Buffers: shared hit=11530 read=4147
+                    Worker 1:  actual time=25.433..25.434 rows=2502.00 loops=1
+                      Buffers: shared hit=11500 read=4058
+                    ->  Nested Loop  (cost=0.43..53577.74 rows=3521 width=24) (actual time=20.790..25.781 rows=2526.00 loops=3)
+                          Output: p.prescription_id, p.follow_up_date, a.patient_id, a.doctor_id, a.slot_start
+                          Inner Unique: true
+                          Buffers: shared hit=34745 read=13049
+                          Worker 0:  actual time=20.092..25.015 rows=2509.00 loops=1
+                            Buffers: shared hit=11530 read=4147
+                          Worker 1:  actual time=20.172..25.201 rows=2502.00 loops=1
+                            Buffers: shared hit=11500 read=4058
+                          ->  Parallel Seq Scan on practo.prescriptions p  (cost=0.00..29632.70 rows=3521 width=12) (actual time=20.780..22.716 rows=2526.00 loops=3)
+                                Output: p.prescription_id, p.appointment_id, p.diagnosis, p.notes, p.follow_up_date, p.issued_at
+                                Filter: ((p.follow_up_date >= '2026-07-01'::date) AND (p.follow_up_date <= '2026-07-07'::date))
+                                Rows Removed by Filter: 645618
+                                Buffers: shared hit=4431 read=13049
+                                Worker 0:  actual time=20.083..21.926 rows=2509.00 loops=1
+                                  Buffers: shared hit=1493 read=4147
+                                Worker 1:  actual time=20.157..22.148 rows=2502.00 loops=1
+                                  Buffers: shared hit=1491 read=4058
+                          ->  Index Scan using appointments_pkey on practo.appointments a  (cost=0.43..6.80 rows=1 width=20) (actual time=0.001..0.001 rows=1.00 loops=7578)
+                                Output: a.appointment_id, a.patient_id, a.doctor_id, a.clinic_id, a.consult_type, a.booked_at, a.slot_start, a.slot_end, a.reason, a.status, a.checked_in_at, a.consult_started_at, a.consult_ended_at, a.fee, a.payment_status
+                                Index Cond: (a.appointment_id = p.appointment_id)
+                                Index Searches: 7578
+                                Buffers: shared hit=30314
+                                Worker 0:  actual time=0.001..0.001 rows=1.00 loops=2509
+                                  Buffers: shared hit=10037
+                                Worker 1:  actual time=0.001..0.001 rows=1.00 loops=2502
+                                  Buffers: shared hit=10009
+Planning:
+  Buffers: shared hit=327
+Planning Time: 0.422 ms
+Execution Time: 126.782 ms

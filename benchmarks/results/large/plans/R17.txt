@@ -1,0 +1,174 @@
+=== R17 run 1 ===
+GroupAggregate  (cost=157024.90..298191.54 rows=823290 width=72) (actual time=336.587..458.258 rows=36.00 loops=1)
+  Output: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying)), count(*)
+  Group Key: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+  Buffers: shared hit=7468 read=57510, temp read=7791 written=7835
+  ->  Gather Merge  (cost=157024.90..252910.59 rows=823290 width=64) (actual time=334.967..426.264 rows=814694.00 loops=1)
+        Output: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=7468 read=57510, temp read=7791 written=7835
+        ->  Sort  (cost=156024.87..156882.47 rows=343038 width=64) (actual time=333.196..354.343 rows=271564.67 loops=3)
+              Output: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+              Sort Key: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+              Sort Method: external merge  Disk: 5032kB
+              Buffers: shared hit=7468 read=57510, temp read=7791 written=7835
+              Worker 0:  actual time=331.829..353.544 rows=267922.00 loops=1
+                Sort Method: external merge  Disk: 4928kB
+                Buffers: shared hit=2629 read=19003, temp read=2831 written=2635
+              Worker 1:  actual time=333.003..354.907 rows=273515.00 loops=1
+                Sort Method: external merge  Disk: 5032kB
+                Buffers: shared hit=2300 read=19292, temp read=2650 written=2528
+              ->  Parallel Hash Join  (cost=20352.00..111588.45 rows=343038 width=64) (actual time=125.382..258.100 rows=271564.67 loops=3)
+                    Output: CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END, COALESCE(p.blood_group, 'unknown'::character varying)
+                    Inner Unique: true
+                    Hash Cond: (a.patient_id = p.patient_id)
+                    Buffers: shared hit=7452 read=57510, temp read=5917 written=5952
+                    Worker 0:  actual time=125.944..257.878 rows=267922.00 loops=1
+                      Buffers: shared hit=2621 read=19003, temp read=2215 written=2016
+                    Worker 1:  actual time=126.082..257.652 rows=273515.00 loops=1
+                      Buffers: shared hit=2292 read=19292, temp read=2021 written=1896
+                    ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..72494.05 rows=343038 width=12) (actual time=0.009..59.333 rows=271564.67 loops=3)
+                          Output: a.slot_start, a.patient_id
+                          Filter: ((a.slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone) AND ((a.status)::text = 'COMPLETED'::text))
+                          Rows Removed by Filter: 728435
+                          Buffers: shared hit=7452 read=46286
+                          Worker 0:  actual time=0.011..60.097 rows=284924.00 loops=1
+                            Buffers: shared hit=2621 read=15346
+                          Worker 1:  actual time=0.009..59.525 rows=252352.00 loops=1
+                            Buffers: shared hit=2292 read=15607
+                    ->  Parallel Hash  (cost=14557.33..14557.33 rows=333333 width=11) (actual time=40.801..40.801 rows=266666.67 loops=3)
+                          Output: p.dob, p.blood_group, p.patient_id
+                          Buckets: 262144  Batches: 8  Memory Usage: 6720kB
+                          Buffers: shared read=11224, temp written=2744
+                          Worker 0:  actual time=40.115..40.115 rows=261371.00 loops=1
+                            Buffers: shared read=3657, temp written=896
+                          Worker 1:  actual time=40.317..40.317 rows=263537.00 loops=1
+                            Buffers: shared read=3685, temp written=900
+                          ->  Parallel Seq Scan on practo.patients p  (cost=0.00..14557.33 rows=333333 width=11) (actual time=0.040..15.118 rows=266666.67 loops=3)
+                                Output: p.dob, p.blood_group, p.patient_id
+                                Buffers: shared read=11224
+                                Worker 0:  actual time=0.037..15.342 rows=261371.00 loops=1
+                                  Buffers: shared read=3657
+                                Worker 1:  actual time=0.060..14.529 rows=263537.00 loops=1
+                                  Buffers: shared read=3685
+Planning:
+  Buffers: shared hit=242 read=11
+Planning Time: 0.456 ms
+Execution Time: 464.343 ms
+=== R17 run 2 ===
+GroupAggregate  (cost=157024.90..298191.54 rows=823290 width=72) (actual time=341.770..463.685 rows=36.00 loops=1)
+  Output: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying)), count(*)
+  Group Key: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+  Buffers: shared hit=8032 read=56946, temp read=7790 written=7871
+  ->  Gather Merge  (cost=157024.90..252910.59 rows=823290 width=64) (actual time=340.218..431.936 rows=814694.00 loops=1)
+        Output: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=8032 read=56946, temp read=7790 written=7871
+        ->  Sort  (cost=156024.87..156882.47 rows=343038 width=64) (actual time=338.362..362.065 rows=271564.67 loops=3)
+              Output: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+              Sort Key: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+              Sort Method: external merge  Disk: 5008kB
+              Buffers: shared hit=8032 read=56946, temp read=7790 written=7871
+              Worker 0:  actual time=337.986..359.672 rows=273155.00 loops=1
+                Sort Method: external merge  Disk: 5024kB
+                Buffers: shared hit=2718 read=19384, temp read=2698 written=2619
+              Worker 1:  actual time=337.357..362.829 rows=269531.00 loops=1
+                Sort Method: external merge  Disk: 4960kB
+                Buffers: shared hit=2612 read=17795, temp read=2842 written=2535
+              ->  Parallel Hash Join  (cost=20352.00..111588.45 rows=343038 width=64) (actual time=129.918..261.744 rows=271564.67 loops=3)
+                    Output: CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END, COALESCE(p.blood_group, 'unknown'::character varying)
+                    Inner Unique: true
+                    Hash Cond: (a.patient_id = p.patient_id)
+                    Buffers: shared hit=8016 read=56946, temp read=5916 written=5988
+                    Worker 0:  actual time=130.300..262.319 rows=273155.00 loops=1
+                      Buffers: shared hit=2710 read=19384, temp read=2070 written=1988
+                    Worker 1:  actual time=130.459..261.500 rows=269531.00 loops=1
+                      Buffers: shared hit=2604 read=17795, temp read=2222 written=1912
+                    ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..72494.05 rows=343038 width=12) (actual time=0.007..59.866 rows=271564.67 loops=3)
+                          Output: a.slot_start, a.patient_id
+                          Filter: ((a.slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone) AND ((a.status)::text = 'COMPLETED'::text))
+                          Rows Removed by Filter: 728435
+                          Buffers: shared hit=7734 read=46004
+                          Worker 0:  actual time=0.006..59.423 rows=277787.00 loops=1
+                            Buffers: shared hit=2628 read=15838
+                          Worker 1:  actual time=0.007..60.544 rows=258524.00 loops=1
+                            Buffers: shared hit=2504 read=14267
+                    ->  Parallel Hash  (cost=14557.33..14557.33 rows=333333 width=11) (actual time=38.673..38.674 rows=266666.67 loops=3)
+                          Output: p.dob, p.blood_group, p.patient_id
+                          Buckets: 262144  Batches: 8  Memory Usage: 6752kB
+                          Buffers: shared hit=282 read=10942, temp written=2760
+                          Worker 0:  actual time=37.986..37.986 rows=258398.00 loops=1
+                            Buffers: shared hit=82 read=3546, temp written=892
+                          Worker 1:  actual time=38.134..38.134 rows=258077.00 loops=1
+                            Buffers: shared hit=100 read=3528, temp written=888
+                          ->  Parallel Seq Scan on practo.patients p  (cost=0.00..14557.33 rows=333333 width=11) (actual time=0.045..14.858 rows=266666.67 loops=3)
+                                Output: p.dob, p.blood_group, p.patient_id
+                                Buffers: shared hit=282 read=10942
+                                Worker 0:  actual time=0.038..14.228 rows=258398.00 loops=1
+                                  Buffers: shared hit=82 read=3546
+                                Worker 1:  actual time=0.067..14.885 rows=258077.00 loops=1
+                                  Buffers: shared hit=100 read=3528
+Planning:
+  Buffers: shared hit=253
+Planning Time: 0.415 ms
+Execution Time: 469.019 ms
+=== R17 run 3 ===
+GroupAggregate  (cost=157024.90..298191.54 rows=823290 width=72) (actual time=331.311..454.860 rows=36.00 loops=1)
+  Output: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying)), count(*)
+  Group Key: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+  Buffers: shared hit=8596 read=56382, temp read=7794 written=7862
+  ->  Gather Merge  (cost=157024.90..252910.59 rows=823290 width=64) (actual time=329.579..423.114 rows=814694.00 loops=1)
+        Output: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=8596 read=56382, temp read=7794 written=7862
+        ->  Sort  (cost=156024.87..156882.47 rows=343038 width=64) (actual time=327.429..351.560 rows=271564.67 loops=3)
+              Output: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+              Sort Key: (CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END), (COALESCE(p.blood_group, 'unknown'::character varying))
+              Sort Method: external merge  Disk: 5048kB
+              Buffers: shared hit=8596 read=56382, temp read=7794 written=7862
+              Worker 0:  actual time=325.639..347.580 rows=266714.00 loops=1
+                Sort Method: external merge  Disk: 4912kB
+                Buffers: shared hit=2774 read=18779, temp read=2826 written=2545
+              Worker 1:  actual time=327.155..355.255 rows=273479.00 loops=1
+                Sort Method: external merge  Disk: 5024kB
+                Buffers: shared hit=2762 read=18252, temp read=2481 written=2575
+              ->  Parallel Hash Join  (cost=20352.00..111588.45 rows=343038 width=64) (actual time=116.439..248.353 rows=271564.67 loops=3)
+                    Output: CASE WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '18 years'::interval) THEN '0-17'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '40 years'::interval) THEN '18-39'::text WHEN (age(((a.slot_start)::date)::timestamp with time zone, (p.dob)::timestamp with time zone) < '60 years'::interval) THEN '40-59'::text ELSE '60+'::text END, COALESCE(p.blood_group, 'unknown'::character varying)
+                    Inner Unique: true
+                    Hash Cond: (a.patient_id = p.patient_id)
+                    Buffers: shared hit=8580 read=56382, temp read=5921 written=5980
+                    Worker 0:  actual time=116.866..247.950 rows=266714.00 loops=1
+                      Buffers: shared hit=2766 read=18779, temp read=2212 written=1928
+                    Worker 1:  actual time=117.001..247.547 rows=273479.00 loops=1
+                      Buffers: shared hit=2754 read=18252, temp read=1853 written=1944
+                    ->  Parallel Seq Scan on practo.appointments a  (cost=0.00..72494.05 rows=343038 width=12) (actual time=0.006..55.553 rows=271564.67 loops=3)
+                          Output: a.slot_start, a.patient_id
+                          Filter: ((a.slot_start >= '2026-01-01 00:00:00+05:30'::timestamp with time zone) AND ((a.status)::text = 'COMPLETED'::text))
+                          Rows Removed by Filter: 728435
+                          Buffers: shared hit=8016 read=45722
+                          Worker 0:  actual time=0.005..56.204 rows=259878.00 loops=1
+                            Buffers: shared hit=2596 read=15291
+                          Worker 1:  actual time=0.007..54.459 rows=262746.00 loops=1
+                            Buffers: shared hit=2579 read=14796
+                    ->  Parallel Hash  (cost=14557.33..14557.33 rows=333333 width=11) (actual time=35.917..35.917 rows=266666.67 loops=3)
+                          Output: p.dob, p.blood_group, p.patient_id
+                          Buckets: 262144  Batches: 8  Memory Usage: 6752kB
+                          Buffers: shared hit=564 read=10660, temp written=2748
+                          Worker 0:  actual time=35.263..35.263 rows=261401.00 loops=1
+                            Buffers: shared hit=170 read=3488, temp written=896
+                          Worker 1:  actual time=35.360..35.360 rows=259738.00 loops=1
+                            Buffers: shared hit=175 read=3456, temp written=896
+                          ->  Parallel Seq Scan on practo.patients p  (cost=0.00..14557.33 rows=333333 width=11) (actual time=0.032..14.551 rows=266666.67 loops=3)
+                                Output: p.dob, p.blood_group, p.patient_id
+                                Buffers: shared hit=564 read=10660
+                                Worker 0:  actual time=0.034..14.338 rows=261401.00 loops=1
+                                  Buffers: shared hit=170 read=3488
+                                Worker 1:  actual time=0.038..13.817 rows=259738.00 loops=1
+                                  Buffers: shared hit=175 read=3456
+Planning:
+  Buffers: shared hit=253
+Planning Time: 0.435 ms
+Execution Time: 461.117 ms
